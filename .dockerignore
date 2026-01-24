@@ -8,6 +8,7 @@
 # Documentation
 docs/
 *.md
+!README.md
 LICENSE
 
 # Development
@@ -19,9 +20,15 @@ LICENSE
 # Testing
 coverage.out
 *.test
+*_test.go
 
 # Build artifacts
 bin/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
 
 # Dependencies
 vendor/
@@ -29,8 +36,19 @@ vendor/
 # Environment
 .env
 .env.local
+.env.*.local
+
+# Pre-commit hooks
+.pre-commit-config.yaml
+.golangci.yml
+.markdownlint.json
 
 # Output
 data/
 *.csv
 *.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
