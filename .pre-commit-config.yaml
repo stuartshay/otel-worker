@@ -47,7 +47,7 @@ repos:
 
   # Protobuf formatting
   - repo: https://github.com/bufbuild/buf
-    rev: v1.29.0
+    rev: v1.50.0
     hooks:
       - id: buf-format
       - id: buf-lint

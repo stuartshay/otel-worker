@@ -12,20 +12,20 @@ import (
 func TestLocationStruct(t *testing.T) {
 	now := time.Now()
 	loc := Location{
-		ID:              123,
-		DeviceID:        "test-device",
-		TID:             "td",
-		Latitude:        40.736097,
-		Longitude:       -74.039373,
-		Accuracy:        10,
-		Altitude:        15,
-		Velocity:        0,
-		Battery:         85,
-		BatteryStatus:   "unplugged",
-		ConnectionType:  "wifi",
-		Trigger:         "timer",
-		Timestamp:       time.Now().Unix(),
-		CreatedAt:       now,
+		ID:             123,
+		DeviceID:       "test-device",
+		TID:            "td",
+		Latitude:       40.736097,
+		Longitude:      -74.039373,
+		Accuracy:       10,
+		Altitude:       15,
+		Velocity:       0,
+		Battery:        85,
+		BatteryStatus:  "unplugged",
+		ConnectionType: "wifi",
+		Trigger:        "timer",
+		Timestamp:      time.Now().Unix(),
+		CreatedAt:      now,
 	}
 
 	if loc.DeviceID != "test-device" {

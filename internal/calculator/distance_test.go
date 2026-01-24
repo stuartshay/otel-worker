@@ -7,12 +7,12 @@ import (
 
 func TestHaversine(t *testing.T) {
 	tests := []struct {
-		name     string
-		lat1     float64
-		lon1     float64
-		lat2     float64
-		lon2     float64
-		expected float64
+		name      string
+		lat1      float64
+		lon1      float64
+		lat2      float64
+		lon2      float64
+		expected  float64
 		tolerance float64
 	}{
 		{
@@ -126,9 +126,9 @@ func TestCalculateMetrics(t *testing.T) {
 
 	t.Run("multiple locations", func(t *testing.T) {
 		locations := []Location{
-			{Latitude: homeLat, Longitude: homeLon},            // At home
-			{Latitude: 40.748817, Longitude: -73.985428},       // Empire State Building (~5 km)
-			{Latitude: 40.758896, Longitude: -73.985130},       // Times Square (~7 km)
+			{Latitude: homeLat, Longitude: homeLon},      // At home
+			{Latitude: 40.748817, Longitude: -73.985428}, // Empire State Building (~5 km)
+			{Latitude: 40.758896, Longitude: -73.985130}, // Times Square (~7 km)
 		}
 		metrics := CalculateMetrics(homeLat, homeLon, locations)
 

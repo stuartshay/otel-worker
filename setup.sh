@@ -130,28 +130,51 @@ if command -v pre-commit &> /dev/null; then
 else
     echo "Installing pre-commit..."
 
-    if command -v pip3 &> /dev/null; then
-        pip3 install --user pre-commit
-        echo "✓ pre-commit installed via pip3"
-    elif command -v pip &> /dev/null; then
-        pip install --user pre-commit
-        echo "✓ pre-commit installed via pip"
-    elif [ "$OS" = "Darwin" ] && command -v brew &> /dev/null; then
-        brew install pre-commit
-        echo "✓ pre-commit installed via Homebrew"
+    # Check if we're in a virtualenv
+    if [ -n "$VIRTUAL_ENV" ]; then
+        # In virtualenv, install without --user flag
+        if command -v pip3 &> /dev/null; then
+            pip3 install pre-commit
+            echo "✓ pre-commit installed via pip3 (virtualenv)"
+        elif command -v pip &> /dev/null; then
+            pip install pre-commit
+            echo "✓ pre-commit installed via pip (virtualenv)"
+        else
+            echo "Warning: Could not install pre-commit. Install manually: pip install pre-commit"
+        fi
     else
-        echo "Warning: Could not install pre-commit. Install manually: pip install pre-commit"
+        # Not in virtualenv, use --user flag
+        if command -v pip3 &> /dev/null; then
+            pip3 install --user pre-commit
+            echo "✓ pre-commit installed via pip3"
+        elif command -v pip &> /dev/null; then
+            pip install --user pre-commit
+            echo "✓ pre-commit installed via pip"
+        elif [ "$OS" = "Darwin" ] && command -v brew &> /dev/null; then
+            brew install pre-commit
+            echo "✓ pre-commit installed via Homebrew"
+        else
+            echo "Warning: Could not install pre-commit. Install manually: pip install pre-commit"
+        fi
     fi
 fi
 
 # Install pre-commit hooks
 echo ""
+# Ensure ~/.local/bin is in PATH (where pip --user installs binaries)
+export PATH="$HOME/.local/bin:$PATH"
+
 if command -v pre-commit &> /dev/null && [ -f ".pre-commit-config.yaml" ]; then
     echo "Installing pre-commit hooks..."
     pre-commit install
     echo "✓ pre-commit hooks installed"
 else
-    echo "⚠ Skipping pre-commit hook installation (pre-commit not found or config missing)"
+    if ! command -v pre-commit &> /dev/null; then
+        echo "⚠ Skipping pre-commit hook installation (pre-commit not found in PATH)"
+        echo "  Try running: export PATH=\$HOME/.local/bin:\$PATH && pre-commit install"
+    elif [ ! -f ".pre-commit-config.yaml" ]; then
+        echo "⚠ Skipping pre-commit hook installation (.pre-commit-config.yaml not found)"
+    fi
 fi
 
 # Initialize Go module if not exists

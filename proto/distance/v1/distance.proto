@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package distance.v1;
 
-option go_package = "github.com/stuartshay/otel-worker/proto/distance/v1;distancev1";
-
 import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/stuartshay/otel-worker/proto/distance/v1;distancev1";
 
 // DistanceService provides operations for calculating distance-from-home metrics
 // using OwnTracks GPS data from a PostgreSQL database.
