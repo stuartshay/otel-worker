@@ -55,7 +55,31 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: '1.24'
+
+      - name: Initialize database schema
+        run: |
+          PGPASSWORD=test psql -h localhost -U test -d owntracks_test -c "
+          CREATE TABLE IF NOT EXISTS public.locations (
+            id SERIAL PRIMARY KEY,
+            device_id VARCHAR(255) NOT NULL,
+            latitude DOUBLE PRECISION NOT NULL,
+            longitude DOUBLE PRECISION NOT NULL,
+            accuracy DOUBLE PRECISION,
+            battery INTEGER,
+            velocity DOUBLE PRECISION,
+            timestamp BIGINT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            altitude DOUBLE PRECISION,
+            vertical_accuracy DOUBLE PRECISION,
+            course DOUBLE PRECISION,
+            topic VARCHAR(255),
+            tracker_id VARCHAR(255),
+            description TEXT
+          );
+          CREATE INDEX IF NOT EXISTS idx_locations_created_at ON public.locations(created_at);
+          CREATE INDEX IF NOT EXISTS idx_locations_device_id ON public.locations(device_id);
+          "
 
       - name: Run integration tests
         env:

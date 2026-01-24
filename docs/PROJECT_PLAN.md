@@ -153,21 +153,23 @@
 #### Docker
 
 - [x] Create multi-stage Dockerfile
-- [x] Use golang:1.23-alpine for builder
+- [x] Use golang:1.24-alpine for builder
 - [x] Use distroless/static for runtime
-- [x] Optimize image size (< 20MB)
+- [x] Optimize image size (< 20MB) - achieved 14.9MB
 - [x] Add non-root user for security
 - [x] Build and test locally
 - [ ] Push to Docker Hub (stuartshay/otel-worker)
 
 #### GitHub Actions
 
-- [ ] Create .github/workflows/lint.yml
-- [ ] Create .github/workflows/test.yml
-- [ ] Create .github/workflows/docker.yml
-- [ ] Add version tagging on merge to main
-- [ ] Configure Docker Hub credentials
-- [ ] Add build status badges
+- [x] Create .github/workflows/lint.yml (Go, Markdown, YAML, Dockerfile, Protobuf)
+- [x] Create .github/workflows/test.yml (unit tests, integration tests with PostgreSQL)
+- [x] Create .github/workflows/docker.yml (multi-arch builds, Trivy scanning)
+- [x] Add version tagging on merge to main
+- [x] Add Trivy vulnerability scanning
+- [x] Add database schema initialization for integration tests
+- [ ] Configure Docker Hub credentials (secrets: DOCKERHUB_USERNAME, DOCKERHUB_TOKEN)
+- [ ] Add build status badges to README
 
 #### Kubernetes Manifests
 

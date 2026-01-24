@@ -1,5 +1,9 @@
 # otel-worker
 
+[![Lint](https://github.com/stuartshay/otel-worker/actions/workflows/lint.yml/badge.svg)](https://github.com/stuartshay/otel-worker/actions/workflows/lint.yml)
+[![Test](https://github.com/stuartshay/otel-worker/actions/workflows/test.yml/badge.svg)](https://github.com/stuartshay/otel-worker/actions/workflows/test.yml)
+[![Docker](https://github.com/stuartshay/otel-worker/actions/workflows/docker.yml/badge.svg)](https://github.com/stuartshay/otel-worker/actions/workflows/docker.yml)
+
 Go-based gRPC microservice that calculates distance-from-home metrics using OwnTracks GPS data.
 
 ## Overview
@@ -100,6 +104,7 @@ Columns:
 - [PROJECT_PLAN.md](docs/PROJECT_PLAN.md) - Implementation roadmap
 - [DATABASE.md](docs/DATABASE.md) - Database schema and query patterns
 - [DOCKER_BUILD.md](docs/DOCKER_BUILD.md) - Docker build and deployment guide
+- [GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md) - CI/CD workflows documentation
 - [AGENTS.md](AGENTS.md) - Quick reference for automation/developers
 - [FUNCTIONALITY.md](docs/FUNCTIONALITY.md) - Business logic specification (coming soon)
 
