@@ -1,6 +1,7 @@
 version: v2
 modules:
-  - path: proto
+  - path: .
+    name: buf.build/stuartshay/otel-worker
 lint:
   use:
     - STANDARD
