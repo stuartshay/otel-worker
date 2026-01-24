@@ -1,3 +1,5 @@
+// Package calculator provides GPS distance calculations using the Haversine formula
+// to compute great-circle distances between geographic coordinates.
 package calculator
 
 import (
@@ -61,11 +63,11 @@ func degreesToRadians(degrees float64) float64 {
 
 // DistanceMetrics holds calculated distance statistics
 type DistanceMetrics struct {
-	TotalDistanceKM  float64
-	MaxDistanceKM    float64
-	MinDistanceKM    float64
-	TotalLocations   int
-	AvgDistanceKM    float64
+	TotalDistanceKM float64
+	MaxDistanceKM   float64
+	MinDistanceKM   float64
+	TotalLocations  int
+	AvgDistanceKM   float64
 }
 
 // CalculateMetrics computes distance metrics for a set of locations

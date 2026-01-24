@@ -1,3 +1,5 @@
+// Package queue provides an in-memory job queue system with worker pool
+// for concurrent processing of distance calculation tasks.
 package queue
 
 import (
@@ -12,6 +14,7 @@ import (
 // JobStatus represents the state of a distance calculation job
 type JobStatus string
 
+// Job status constants define the lifecycle states
 const (
 	StatusQueued     JobStatus = "queued"
 	StatusProcessing JobStatus = "processing"

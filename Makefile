@@ -28,14 +28,14 @@ help:
 # Pre-commit
 pre-commit-install:
 	@echo "Installing pre-commit hooks..."
-	@pip install pre-commit || pip3 install pre-commit
-	@pre-commit install
+	@command -v pre-commit >/dev/null 2>&1 || { echo "Installing pre-commit..."; pip3 install --user pre-commit; }
+	@if [ -f ~/.local/bin/pre-commit ]; then ~/.local/bin/pre-commit install; else pre-commit install; fi
 	@echo "✓ Pre-commit hooks installed"
 
 pre-commit-run:
 	@echo "Running pre-commit checks..."
-	@pre-commit run --all-files
+	@if [ -f ~/.local/bin/pre-commit ]; then ~/.local/bin/pre-commit run --all-files; else pre-commit run --all-files; fi
 	@echo "✓ Pre-commit checks complete"
 
 pre-commit-update:
-	@pre-commit autoupdate
+	@if [ -f ~/.local/bin/pre-commit ]; then ~/.local/bin/pre-commit autoupdate; else pre-commit autoupdate; fi

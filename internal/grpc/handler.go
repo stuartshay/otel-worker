@@ -1,3 +1,5 @@
+// Package grpc implements the DistanceService gRPC server handlers
+// for distance calculation job management and CSV generation.
 package grpc
 
 import (
@@ -21,9 +23,9 @@ import (
 // Server implements the DistanceService gRPC server
 type Server struct {
 	distancev1.UnimplementedDistanceServiceServer
-	cfg    *config.Config
-	db     *database.Client
-	queue  *queue.Queue
+	cfg   *config.Config
+	db    *database.Client
+	queue *queue.Queue
 }
 
 // NewServer creates a new gRPC server instance
@@ -228,7 +230,11 @@ func (s *Server) generateCSV(date, deviceID string, locations []database.Locatio
 	if err != nil {
 		return "", fmt.Errorf("failed to create CSV file: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			log.Error().Err(closeErr).Msg("Failed to close CSV file")
+		}
+	}()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
@@ -268,13 +274,13 @@ func (s *Server) generateCSV(date, deviceID string, locations []database.Locatio
 	}
 
 	// Write summary footer
-	writer.Write([]string{})
-	writer.Write([]string{"Summary"})
-	writer.Write([]string{"Total Distance (km)", fmt.Sprintf("%.2f", metrics.TotalDistanceKM)})
-	writer.Write([]string{"Max Distance (km)", fmt.Sprintf("%.2f", metrics.MaxDistanceKM)})
-	writer.Write([]string{"Min Distance (km)", fmt.Sprintf("%.2f", metrics.MinDistanceKM)})
-	writer.Write([]string{"Total Locations", fmt.Sprintf("%d", metrics.TotalLocations)})
-	writer.Write([]string{"Average Distance (km)", fmt.Sprintf("%.2f", metrics.AvgDistanceKM)})
+	_ = writer.Write([]string{})
+	_ = writer.Write([]string{"Summary"})
+	_ = writer.Write([]string{"Total Distance (km)", fmt.Sprintf("%.2f", metrics.TotalDistanceKM)})
+	_ = writer.Write([]string{"Max Distance (km)", fmt.Sprintf("%.2f", metrics.MaxDistanceKM)})
+	_ = writer.Write([]string{"Min Distance (km)", fmt.Sprintf("%.2f", metrics.MinDistanceKM)})
+	_ = writer.Write([]string{"Total Locations", fmt.Sprintf("%d", metrics.TotalLocations)})
+	_ = writer.Write([]string{"Average Distance (km)", fmt.Sprintf("%.2f", metrics.AvgDistanceKM)})
 
 	log.Info().Str("csv_path", csvPath).Msg("CSV file generated successfully")
 

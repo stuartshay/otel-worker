@@ -1,3 +1,5 @@
+// Package database provides PostgreSQL client functionality for accessing
+// OwnTracks location data with connection pooling and health checks.
 package database
 
 import (
@@ -16,20 +18,20 @@ type Client struct {
 
 // Location represents a GPS location record from the database
 type Location struct {
-	ID              int64
-	DeviceID        string
-	TID             string
-	Latitude        float64
-	Longitude       float64
-	Accuracy        int
-	Altitude        int
-	Velocity        int
-	Battery         int
-	BatteryStatus   string
-	ConnectionType  string
-	Trigger         string
-	Timestamp       int64
-	CreatedAt       time.Time
+	ID             int64
+	DeviceID       string
+	TID            string
+	Latitude       float64
+	Longitude      float64
+	Accuracy       int
+	Altitude       int
+	Velocity       int
+	Battery        int
+	BatteryStatus  string
+	ConnectionType string
+	Trigger        string
+	Timestamp      int64
+	CreatedAt      time.Time
 }
 
 // NewClient creates a new database client with connection pooling
@@ -88,7 +90,7 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var locations []Location
 	for rows.Next() {
@@ -146,7 +148,7 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var locations []Location
 	for rows.Next() {
@@ -193,7 +195,7 @@ func (c *Client) GetDevices(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var devices []string
 	for rows.Next() {

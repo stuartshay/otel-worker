@@ -1,3 +1,5 @@
+// Package main is the entry point for the otel-worker gRPC server,
+// providing distance calculation services with PostgreSQL integration.
 package main
 
 import (

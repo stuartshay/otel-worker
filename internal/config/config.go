@@ -1,3 +1,5 @@
+// Package config provides application configuration management,
+// loading settings from environment variables and .env files.
 package config
 
 import (
