@@ -2,19 +2,20 @@
 
 ## Project Overview
 
-**Name**: otel-worker  
-**Type**: Go gRPC Microservice  
-**Purpose**: Calculate distance-from-home metrics using OwnTracks GPS data  
-**Started**: 2026-01-24  
-**Target Cluster**: k8s-pi5-cluster  
-**Home Location**: 40.736097°N, 74.039373°W  
+**Name**: otel-worker
+**Type**: Go gRPC Microservice
+**Purpose**: Calculate distance-from-home metrics using OwnTracks GPS data
+**Started**: 2026-01-24
+**Target Cluster**: k8s-pi5-cluster
+**Home Location**: 40.736097°N, 74.039373°W
 **Database**: PostgreSQL (192.168.1.175:5432/owntracks)
 
 ## Implementation Roadmap
 
 ### Phase 1: Investigation & Setup ⏳ IN PROGRESS
 
-**Database Investigation**
+#### Database Investigation
+
 - [ ] Connect to owntracks database (192.168.1.175:5432)
 - [ ] Query `public.locations` table schema
 - [ ] Analyze sample data (column names, data types, indexes)
@@ -22,7 +23,8 @@
 - [ ] Test query performance with date filters
 - [ ] Document actual schema in DATABASE.md
 
-**Development Environment**
+#### Development Environment
+
 - [x] Create project directory structure
 - [x] Write setup.sh script for Go SDK installation
 - [x] Create Makefile with build targets
@@ -34,7 +36,8 @@
 
 ### Phase 2: Core Implementation 🔜 NEXT
 
-**gRPC API Definition**
+#### gRPC API Definition
+
 - [ ] Define proto/distance/v1/distance.proto
 - [ ] Create DistanceService with CalculateDistanceFromHome RPC
 - [ ] Define request/response message structures
@@ -44,6 +47,7 @@
 - [ ] Document API in docs/API.md
 
 **Database Layer** `internal/database/`
+
 - [ ] Implement client.go (PostgreSQL connection pool)
 - [ ] Create Config struct with connection parameters
 - [ ] Implement Connect() with retry logic
@@ -53,6 +57,7 @@
 - [ ] Write unit tests with mock database
 
 **Distance Calculator** `internal/calculator/`
+
 - [ ] Implement haversine.go with distance formula
 - [ ] Create DistanceFromHome() function
 - [ ] Implement trips.go for trip detection logic
@@ -63,6 +68,7 @@
 - [ ] Write unit tests with known coordinates
 
 **Configuration** `internal/config/`
+
 - [ ] Implement config.go with environment loading
 - [ ] Create Config struct with all settings
 - [ ] Add validation for required fields
@@ -71,6 +77,7 @@
 - [ ] Implement getters for configuration
 
 **Job Queue System** `internal/queue/`
+
 - [ ] Implement queue.go with channel-based queue
 - [ ] Create Job struct with status tracking
 - [ ] Implement worker pool (configurable goroutines)
@@ -80,6 +87,7 @@
 - [ ] Handle job failures and retries
 
 **gRPC Server** `internal/grpc/`
+
 - [ ] Implement handler.go with service implementation
 - [ ] Create CalculateDistanceFromHome handler
 - [ ] Create GetJobStatus handler
@@ -89,6 +97,7 @@
 - [ ] Implement error handling and status codes
 
 **Main Application** `cmd/server/`
+
 - [ ] Implement main.go with initialization
 - [ ] Load configuration from environment
 - [ ] Set up database connection
@@ -100,7 +109,8 @@
 
 ### Phase 3: Testing & Quality 📝 PLANNED
 
-**Unit Tests**
+#### Unit Tests
+
 - [ ] Test haversine distance calculations
 - [ ] Test trip detection logic
 - [ ] Test data quality filters
@@ -109,7 +119,8 @@
 - [ ] Test configuration loading
 - [ ] Achieve 80%+ code coverage
 
-**Integration Tests**
+#### Integration Tests
+
 - [ ] Test database queries with test database
 - [ ] Test gRPC handlers end-to-end
 - [ ] Test concurrent job processing
@@ -117,7 +128,8 @@
 - [ ] Test error scenarios (DB down, invalid input)
 - [ ] Test graceful shutdown
 
-**Performance Testing**
+#### Performance Testing
+
 - [ ] Benchmark distance calculations (1000+ points)
 - [ ] Test concurrent request handling (10+ jobs)
 - [ ] Measure memory usage with large datasets
@@ -125,7 +137,8 @@
 - [ ] Profile CPU usage under load
 - [ ] Optimize database queries
 
-**Code Quality**
+#### Code Quality
+
 - [ ] Set up golangci-lint configuration
 - [ ] Add pre-commit hooks
 - [ ] Format code with gofmt
@@ -135,7 +148,8 @@
 
 ### Phase 4: Containerization & Deployment 🚀 PLANNED
 
-**Docker**
+#### Docker
+
 - [ ] Create multi-stage Dockerfile
 - [ ] Use golang:1.23-alpine for builder
 - [ ] Use distroless/static for runtime
@@ -144,7 +158,8 @@
 - [ ] Build and test locally
 - [ ] Push to Docker Hub (stuartshay/otel-worker)
 
-**GitHub Actions**
+#### GitHub Actions
+
 - [ ] Create .github/workflows/lint.yml
 - [ ] Create .github/workflows/test.yml
 - [ ] Create .github/workflows/docker.yml
@@ -152,7 +167,8 @@
 - [ ] Configure Docker Hub credentials
 - [ ] Add build status badges
 
-**Kubernetes Manifests**
+#### Kubernetes Manifests
+
 - [ ] Create apps/base/otel-worker/deployment.yaml
 - [ ] Create apps/base/otel-worker/service.yaml
 - [ ] Create apps/base/otel-worker/configmap.yaml
@@ -163,7 +179,8 @@
 - [ ] Configure resource limits (200m CPU, 512Mi memory)
 - [ ] Add health/readiness probes
 
-**GitOps Integration**
+#### GitOps Integration
+
 - [ ] Add otel-worker to k8s-gitops repository
 - [ ] Configure Argo CD application
 - [ ] Set sync policy (automated)
@@ -174,7 +191,8 @@
 
 ### Phase 5: Observability & Monitoring 📊 PLANNED
 
-**OpenTelemetry Integration**
+#### OpenTelemetry Integration
+
 - [ ] Add OTel SDK dependency
 - [ ] Instrument gRPC server with otelgrpc
 - [ ] Trace database queries
@@ -182,7 +200,8 @@
 - [ ] Export to otel-collector
 - [ ] Configure trace sampling (1.0 for dev)
 
-**Metrics**
+#### Metrics
+
 - [ ] Expose Prometheus metrics endpoint (/metrics)
 - [ ] Add custom metrics (jobs_total, jobs_duration_seconds)
 - [ ] Track database query duration
@@ -190,7 +209,8 @@
 - [ ] Track queue depth and worker utilization
 - [ ] Add histogram for distance calculations
 
-**Logging**
+#### Logging
+
 - [ ] Implement structured logging (JSON format)
 - [ ] Include trace_id in all logs
 - [ ] Log levels: DEBUG, INFO, WARN, ERROR
@@ -198,7 +218,8 @@
 - [ ] Configure log sampling for high-volume logs
 - [ ] Add contextual fields (job_id, date, etc.)
 
-**Health Checks**
+#### Health Checks
+
 - [ ] Implement /healthz (liveness probe)
 - [ ] Implement /readyz (readiness probe)
 - [ ] Check database connectivity
@@ -207,7 +228,8 @@
 
 ### Phase 6: Integration & Documentation 📖 PLANNED
 
-**otel-demo API Integration**
+#### otel-demo API Integration
+
 - [ ] Add gRPC client to otel-demo Flask app
 - [ ] Create REST endpoint: POST /api/distance/calculate
 - [ ] Implement async job polling
@@ -215,7 +237,8 @@
 - [ ] Add authentication (Cognito JWT validation)
 - [ ] Add rate limiting
 
-**otel-ui Frontend**
+#### otel-ui Frontend
+
 - [ ] Create distance calculation UI component
 - [ ] Add date picker for calculation
 - [ ] Display job status (pending/processing/completed)
@@ -224,7 +247,8 @@
 - [ ] Add distance visualization (map/chart)
 - [ ] Add historical data view
 
-**Documentation**
+#### Documentation
+
 - [x] Complete PROJECT_PLAN.md (this file)
 - [ ] Write FUNCTIONALITY.md with business logic
 - [ ] Write API.md with gRPC examples

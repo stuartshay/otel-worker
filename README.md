@@ -4,7 +4,9 @@ Go-based gRPC microservice that calculates distance-from-home metrics using OwnT
 
 ## Overview
 
-otel-worker processes GPS location data from an OwnTracks database and calculates distance-based metrics from a fixed home location. It provides a gRPC API for async job processing and generates CSV reports with detailed location and distance information.
+otel-worker processes GPS location data from an OwnTracks database and calculates
+distance-based metrics from a fixed home location. It provides a gRPC API for async job
+processing and generates CSV reports with detailed location and distance information.
 
 ## Features
 
@@ -61,6 +63,7 @@ make test
 See [`.env.example`](.env.example) for all configuration options.
 
 Key settings:
+
 - `HOME_LATITUDE`, `HOME_LONGITUDE` - Reference point for distance calculations
 - `POSTGRES_*` - Database connection details
 - `AWAY_THRESHOLD_KM` - Distance threshold for trip detection (default: 0.5 km)
@@ -68,11 +71,13 @@ Key settings:
 ## API
 
 gRPC service on port **50051**:
+
 - `CalculateDistanceFromHome` - Submit calculation job for a date
 - `GetJobStatus` - Poll job status and retrieve results
 - `ListJobs` - List all jobs
 
 Health checks on port **8080**:
+
 - `GET /healthz` - Liveness probe
 - `GET /readyz` - Readiness probe
 
@@ -81,6 +86,7 @@ Health checks on port **8080**:
 CSV files: `distance_YYYYMMDD.csv`
 
 Columns:
+
 - timestamp
 - latitude, longitude
 - distance_from_home_km
