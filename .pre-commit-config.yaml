@@ -22,7 +22,7 @@ repos:
       - id: go-fmt
       - id: go-imports
       - id: go-mod-tidy
-      - id: go-vet
+      # go-vet disabled: covered by golangci-lint in CI
       - id: go-unit-tests
 
   # Markdown linting
