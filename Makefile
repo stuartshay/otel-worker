@@ -5,25 +5,25 @@ DOCKER_IMAGE=stuartshay/otel-worker
 VERSION?=latest
 
 proto:
-    @protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/distance/v1/distance.proto
+	@protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/distance/v1/distance.proto
 
 build:
-    @go build -o bin/$(BINARY_NAME) cmd/server/main.go
+	@go build -o bin/$(BINARY_NAME) cmd/server/main.go
 
 run: build
-    @./bin/$(BINARY_NAME)
+	@./bin/$(BINARY_NAME)
 
 test:
-    @go test -v -race -coverprofile=coverage.out ./...
+	@go test -v -race -coverprofile=coverage.out ./...
 
 clean:
-    @rm -rf bin/ coverage.out
+	@rm -rf bin/ coverage.out
 
 docker-build:
-    @docker build -t $(DOCKER_IMAGE):$(VERSION) .
+	@docker build -t $(DOCKER_IMAGE):$(VERSION) .
 
 help:
-    @echo "Targets: proto build run test clean docker-build"
+	@echo "Targets: proto build run test clean docker-build"
 
 # Pre-commit
 pre-commit-install:
