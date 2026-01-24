@@ -3,6 +3,7 @@ package queue
 import (
 	"context"
 	"errors"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -105,9 +106,9 @@ func TestListJobs(t *testing.T) {
 }
 
 func TestProcessJob_Success(t *testing.T) {
-	processorCalled := false
+	var processorCalled atomic.Bool
 	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
-		processorCalled = true
+		processorCalled.Store(true)
 		return &JobResult{
 			CSVPath:         "/data/distance_20260124.csv",
 			TotalDistanceKM: 25.5,
@@ -125,7 +126,7 @@ func TestProcessJob_Success(t *testing.T) {
 	// Wait for processing
 	time.Sleep(100 * time.Millisecond)
 
-	if !processorCalled {
+	if !processorCalled.Load() {
 		t.Error("expected processor to be called")
 	}
 
