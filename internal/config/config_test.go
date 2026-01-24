@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// nolint:gocyclo // Test function complexity from multiple subtests and assertions
 func TestLoad(t *testing.T) {
 	// Save original env vars
 	originalEnv := make(map[string]string)

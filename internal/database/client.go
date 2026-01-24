@@ -52,7 +52,9 @@ func NewClient(dsn string) (*Client, error) {
 	defer cancel()
 
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		if closeErr := db.Close(); closeErr != nil {
+			return nil, fmt.Errorf("failed to ping database: %w (also failed to close: %w)", err, closeErr)
+		}
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
@@ -90,7 +92,7 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
-	defer func() { _ = rows.Close() }()
+	defer func() { _ = rows.Close() }() // nolint:errcheck // Close in defer, error not actionable
 
 	var locations []Location
 	for rows.Next() {
@@ -148,7 +150,7 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
-	defer func() { _ = rows.Close() }()
+	defer func() { _ = rows.Close() }() // nolint:errcheck // Close in defer, error not actionable
 
 	var locations []Location
 	for rows.Next() {
@@ -195,7 +197,7 @@ func (c *Client) GetDevices(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
-	defer func() { _ = rows.Close() }()
+	defer func() { _ = rows.Close() }() // nolint:errcheck // Close in defer, error not actionable
 
 	var devices []string
 	for rows.Next() {

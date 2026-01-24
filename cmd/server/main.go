@@ -55,17 +55,23 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to initialize database client")
 	}
-	defer dbClient.Close()
+	defer func() {
+		if closeErr := dbClient.Close(); closeErr != nil {
+			log.Error().Err(closeErr).Msg("Failed to close database connection")
+		}
+	}()
 
 	log.Info().Msg("Database connection established")
 
 	// Verify database connectivity
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
-	if err := dbClient.HealthCheck(ctx); err != nil {
-		log.Fatal().Err(err).Msg("Database health check failed")
+	if healthErr := dbClient.HealthCheck(ctx); healthErr != nil {
+		cancel()
+		log.Error().Err(healthErr).Msg("Database health check failed")
+		os.Exit(1) // nolint:gocritic // Immediate exit on health check failure is intentional
 	}
+	cancel()
 
 	log.Info().Msg("Database health check passed")
 

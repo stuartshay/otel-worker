@@ -93,12 +93,18 @@ func (s *Server) GetJobStatus(ctx context.Context, req *distancev1.GetJobStatusR
 	}
 
 	if job.Result != nil {
+		// Safe conversion: TotalLocations is bounded by database query results
+		totalLocs := job.Result.TotalLocations
+		if totalLocs > 2147483647 {
+			totalLocs = 2147483647 // Cap at int32 max
+		}
+
 		resp.Result = &distancev1.JobResult{
 			CsvPath:          job.Result.CSVPath,
 			TotalDistanceKm:  job.Result.TotalDistanceKM,
 			MaxDistanceKm:    job.Result.MaxDistanceKM,
 			MinDistanceKm:    job.Result.MinDistanceKM,
-			TotalLocations:   int32(job.Result.TotalLocations),
+			TotalLocations:   int32(totalLocs), // #nosec G115
 			Date:             job.Date,
 			DeviceId:         job.DeviceID,
 			ProcessingTimeMs: job.Result.ProcessingTimeMS,
@@ -123,8 +129,8 @@ func (s *Server) ListJobs(ctx context.Context, req *distancev1.ListJobsRequest) 
 	jobs := s.queue.ListJobs(queue.JobStatus(req.Status), limit, offset)
 
 	resp := &distancev1.ListJobsResponse{
-		Limit:  int32(limit),
-		Offset: int32(offset),
+		Limit:  int32(limit),  // #nosec G115 -- limit is validated and capped at 500
+		Offset: int32(offset), // #nosec G115 -- offset is reasonable pagination value
 	}
 
 	for _, job := range jobs {
@@ -143,7 +149,7 @@ func (s *Server) ListJobs(ctx context.Context, req *distancev1.ListJobsRequest) 
 		resp.Jobs = append(resp.Jobs, summary)
 	}
 
-	resp.TotalCount = int32(len(jobs))
+	resp.TotalCount = int32(len(jobs)) // #nosec G115 -- len(jobs) <= limit (max 500)
 
 	return resp, nil
 }
@@ -210,7 +216,7 @@ func (s *Server) processDistanceJob(ctx context.Context, job *queue.Job) (*queue
 // generateCSV creates a CSV file with location data and distance calculations
 func (s *Server) generateCSV(date, deviceID string, locations []database.Location, metrics calculator.DistanceMetrics) (string, error) {
 	// Create output directory if it doesn't exist
-	if err := os.MkdirAll(s.cfg.CSVOutputPath, 0755); err != nil {
+	if err := os.MkdirAll(s.cfg.CSVOutputPath, 0750); err != nil {
 		return "", fmt.Errorf("failed to create output directory: %w", err)
 	}
 
@@ -226,6 +232,7 @@ func (s *Server) generateCSV(date, deviceID string, locations []database.Locatio
 	csvPath := filepath.Join(s.cfg.CSVOutputPath, filename)
 
 	// Create CSV file
+	// #nosec G304 -- csvPath is constructed from validated date and deviceID parameters
 	file, err := os.Create(csvPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to create CSV file: %w", err)
@@ -274,13 +281,21 @@ func (s *Server) generateCSV(date, deviceID string, locations []database.Locatio
 	}
 
 	// Write summary footer
-	_ = writer.Write([]string{})
-	_ = writer.Write([]string{"Summary"})
-	_ = writer.Write([]string{"Total Distance (km)", fmt.Sprintf("%.2f", metrics.TotalDistanceKM)})
-	_ = writer.Write([]string{"Max Distance (km)", fmt.Sprintf("%.2f", metrics.MaxDistanceKM)})
-	_ = writer.Write([]string{"Min Distance (km)", fmt.Sprintf("%.2f", metrics.MinDistanceKM)})
-	_ = writer.Write([]string{"Total Locations", fmt.Sprintf("%d", metrics.TotalLocations)})
-	_ = writer.Write([]string{"Average Distance (km)", fmt.Sprintf("%.2f", metrics.AvgDistanceKM)})
+	summaryRows := [][]string{
+		{},
+		{"Summary"},
+		{"Total Distance (km)", fmt.Sprintf("%.2f", metrics.TotalDistanceKM)},
+		{"Max Distance (km)", fmt.Sprintf("%.2f", metrics.MaxDistanceKM)},
+		{"Min Distance (km)", fmt.Sprintf("%.2f", metrics.MinDistanceKM)},
+		{"Total Locations", fmt.Sprintf("%d", metrics.TotalLocations)},
+		{"Average Distance (km)", fmt.Sprintf("%.2f", metrics.AvgDistanceKM)},
+	}
+
+	for _, row := range summaryRows {
+		if err := writer.Write(row); err != nil {
+			return "", fmt.Errorf("failed to write CSV summary: %w", err)
+		}
+	}
 
 	log.Info().Str("csv_path", csvPath).Msg("CSV file generated successfully")
 

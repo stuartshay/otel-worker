@@ -200,6 +200,7 @@ func (q *Queue) GetStats() map[string]int {
 }
 
 // worker processes jobs from the queue
+// nolint:unparam // id parameter reserved for future debugging/logging
 func (q *Queue) worker(id int) {
 	defer q.wg.Done()
 
