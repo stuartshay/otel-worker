@@ -200,6 +200,6 @@ func TestShutdown(t *testing.T) {
 	case <-q.ctx.Done():
 		// Expected
 	default:
-		t.Error("expected context to be cancelled")
+		t.Error("expected context to be canceled")
 	}
 }

@@ -53,12 +53,12 @@ func TestClient_ContextCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
 
-	// Verify context is cancelled
+	// Verify context is canceled
 	select {
 	case <-ctx.Done():
 		// Expected
 	default:
-		t.Error("expected context to be cancelled")
+		t.Error("expected context to be canceled")
 	}
 }
 
