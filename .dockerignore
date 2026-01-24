@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github
+
+# Documentation
+docs/
+*.md
+LICENSE
+
+# Development
+.vscode
+.idea
+*.swp
+*.swo
+
+# Testing
+coverage.out
+*.test
+
+# Build artifacts
+bin/
+
+# Dependencies
+vendor/
+
+# Environment
+.env
+.env.local
+
+# Output
+data/
+*.csv
+*.log
