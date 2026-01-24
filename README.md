@@ -23,9 +23,10 @@ processing and generates CSV reports with detailed location and distance informa
 
 ### Prerequisites
 
-- Go 1.23+
-- PostgreSQL with OwnTracks data
+- Go 1.24+
+- PostgreSQL with OwnTracks data (PgBouncer recommended)
 - Docker (optional)
+- protoc 3.12+ with Go plugins (for protobuf generation)
 
 ### Installation
 
@@ -97,9 +98,16 @@ Columns:
 ## Documentation
 
 - [PROJECT_PLAN.md](docs/PROJECT_PLAN.md) - Implementation roadmap
+- [DATABASE.md](docs/DATABASE.md) - Database schema and query patterns
+- [DOCKER_BUILD.md](docs/DOCKER_BUILD.md) - Docker build and deployment guide
+- [AGENTS.md](AGENTS.md) - Quick reference for automation/developers
 - [FUNCTIONALITY.md](docs/FUNCTIONALITY.md) - Business logic specification (coming soon)
 
 ## Deployment
+
+Docker image: **stuartshay/otel-worker:latest** (14.9 MB)
+
+See [DOCKER_BUILD.md](docs/DOCKER_BUILD.md) for build instructions.
 
 Kubernetes manifests are managed in the [k8s-gitops](https://github.com/stuartshay/k8s-gitops) repository.
 
@@ -109,6 +117,9 @@ make docker-build
 
 # Push to Docker Hub
 make docker-push
+
+# Run with Docker
+docker run -p 50051:50051 -p 8080:8080 --env-file .env stuartshay/otel-worker:latest
 ```
 
 ## Related Projects
@@ -123,4 +134,7 @@ MIT
 
 ## Status
 
-⏳ **In Development** - Phase 1 Setup Complete
+✅ **Phase 1 Complete** - Database integration and development environment
+✅ **Phase 2 Complete** - Core implementation (config, calculator, database, queue, gRPC, server)
+⏳ **Phase 3 In Progress** - Testing & quality (Docker containerization complete)
+📋 **Phase 4 Planned** - GitHub Actions CI/CD and Kubernetes deployment
