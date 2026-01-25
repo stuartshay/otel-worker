@@ -3,6 +3,10 @@
 [![Lint](https://github.com/stuartshay/otel-worker/actions/workflows/lint.yml/badge.svg)](https://github.com/stuartshay/otel-worker/actions/workflows/lint.yml)
 [![Test](https://github.com/stuartshay/otel-worker/actions/workflows/test.yml/badge.svg)](https://github.com/stuartshay/otel-worker/actions/workflows/test.yml)
 [![Docker](https://github.com/stuartshay/otel-worker/actions/workflows/docker.yml/badge.svg)](https://github.com/stuartshay/otel-worker/actions/workflows/docker.yml)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-stuartshay%2Fotel--worker-blue?logo=docker)](https://hub.docker.com/repository/docker/stuartshay/otel-worker)
+[![Go Version](https://img.shields.io/badge/Go-1.24-00ADD8?logo=go&logoColor=white)](https://golang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg?logo=renovatebot)](https://renovatebot.com)
 
 Go-based gRPC microservice that calculates distance-from-home metrics using OwnTracks GPS data.
 
@@ -61,43 +65,81 @@ make run
 
 # Run tests
 make test
+
+# Run pre-commit checks
+make pre-commit-run
 ```
 
 ## Configuration
 
 See [`.env.example`](.env.example) for all configuration options.
 
-Key settings:
-
-- `HOME_LATITUDE`, `HOME_LONGITUDE` - Reference point for distance calculations
-- `POSTGRES_*` - Database connection details
-- `AWAY_THRESHOLD_KM` - Distance threshold for trip detection (default: 0.5 km)
+| Variable | Default | Description |
+| -------- | ------- | ----------- |
+| `HOME_LATITUDE` | - | Reference latitude for distance calculations |
+| `HOME_LONGITUDE` | - | Reference longitude for distance calculations |
+| `POSTGRES_HOST` | `localhost` | PostgreSQL host |
+| `POSTGRES_PORT` | `5432` | PostgreSQL port |
+| `POSTGRES_DB` | `owntracks` | Database name |
+| `POSTGRES_USER` | - | Database username |
+| `POSTGRES_PASSWORD` | - | Database password |
+| `AWAY_THRESHOLD_KM` | `0.5` | Distance threshold for trip detection |
+| `GRPC_PORT` | `50051` | gRPC server port |
+| `HTTP_PORT` | `8080` | HTTP health check port |
 
 ## API
 
-gRPC service on port **50051**:
+### gRPC Service (port 50051)
 
-- `CalculateDistanceFromHome` - Submit calculation job for a date
-- `GetJobStatus` - Poll job status and retrieve results
-- `ListJobs` - List all jobs
+| Method | Description |
+| ------ | ----------- |
+| `CalculateDistanceFromHome` | Submit calculation job for a date |
+| `GetJobStatus` | Poll job status and retrieve results |
+| `ListJobs` | List all jobs |
 
-Health checks on port **8080**:
+### Health Checks (port 8080)
 
-- `GET /healthz` - Liveness probe
-- `GET /readyz` - Readiness probe
+| Endpoint | Description |
+| -------- | ----------- |
+| `GET /healthz` | Liveness probe |
+| `GET /readyz` | Readiness probe |
 
 ## Output
 
 CSV files: `distance_YYYYMMDD.csv`
 
-Columns:
+| Column | Description |
+| ------ | ----------- |
+| `timestamp` | Location timestamp |
+| `latitude` | GPS latitude |
+| `longitude` | GPS longitude |
+| `distance_from_home_km` | Distance from home in kilometers |
+| `is_away` | Boolean indicating if outside threshold |
+| `accuracy` | GPS accuracy in meters |
+| `cumulative_away_time_minutes` | Total time away from home |
 
-- timestamp
-- latitude, longitude
-- distance_from_home_km
-- is_away (boolean)
-- accuracy
-- cumulative_away_time_minutes
+## Docker
+
+Docker image: **stuartshay/otel-worker:latest** (14.9 MB)
+
+```bash
+# Build Docker image
+make docker-build
+
+# Run with Docker
+docker run -p 50051:50051 -p 8080:8080 --env-file .env stuartshay/otel-worker:latest
+```
+
+## Kubernetes
+
+Kubernetes manifests are managed in the [k8s-gitops](https://github.com/stuartshay/k8s-gitops) repository.
+
+| Resource | Value |
+| -------- | ----- |
+| Namespace | `otel-worker` |
+| Docker Hub | `stuartshay/otel-worker` |
+| gRPC Port | 50051 |
+| HTTP Port | 8080 |
 
 ## Documentation
 
@@ -106,40 +148,15 @@ Columns:
 - [DOCKER_BUILD.md](docs/DOCKER_BUILD.md) - Docker build and deployment guide
 - [GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md) - CI/CD workflows documentation
 - [AGENTS.md](AGENTS.md) - Quick reference for automation/developers
-- [FUNCTIONALITY.md](docs/FUNCTIONALITY.md) - Business logic specification (coming soon)
-
-## Deployment
-
-Docker image: **stuartshay/otel-worker:latest** (14.9 MB)
-
-See [DOCKER_BUILD.md](docs/DOCKER_BUILD.md) for build instructions.
-
-Kubernetes manifests are managed in the [k8s-gitops](https://github.com/stuartshay/k8s-gitops) repository.
-
-```bash
-# Build Docker image
-make docker-build
-
-# Push to Docker Hub
-make docker-push
-
-# Run with Docker
-docker run -p 50051:50051 -p 8080:8080 --env-file .env stuartshay/otel-worker:latest
-```
 
 ## Related Projects
 
-- [otel-demo](https://github.com/stuartshay/otel-demo) - Flask API backend
-- [otel-ui](https://github.com/stuartshay/otel-ui) - React frontend
-- [k8s-gitops](https://github.com/stuartshay/k8s-gitops) - Kubernetes GitOps manifests
+| Project | Description |
+| ------- | ----------- |
+| [otel-demo](https://github.com/stuartshay/otel-demo) | Flask API backend |
+| [otel-ui](https://github.com/stuartshay/otel-ui) | React frontend |
+| [k8s-gitops](https://github.com/stuartshay/k8s-gitops) | Kubernetes GitOps manifests |
 
 ## License
 
 MIT
-
-## Status
-
-✅ **Phase 1 Complete** - Database integration and development environment
-✅ **Phase 2 Complete** - Core implementation (config, calculator, database, queue, gRPC, server)
-⏳ **Phase 3 In Progress** - Testing & quality (Docker containerization complete)
-📋 **Phase 4 Planned** - GitHub Actions CI/CD and Kubernetes deployment
