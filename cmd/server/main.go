@@ -179,6 +179,28 @@ func main() { // nolint:gocyclo // Main function complexity is acceptable for se
 		_, _ = w.Write([]byte(`{"status":"ready","service":"otel-worker","database":"connected"}`)) //nolint:errcheck // HTTP response write failure is not recoverable
 	})
 
+	// CSV download endpoint
+	http.HandleFunc("/download/", func(w http.ResponseWriter, r *http.Request) {
+		// Extract filename from path
+		filename := r.URL.Path[len("/download/"):]
+		if filename == "" {
+			http.Error(w, "Filename required", http.StatusBadRequest)
+			return
+		}
+
+		// Security: only allow distance_*.csv files
+		if len(filename) < 13 || filename[:9] != "distance_" || filename[len(filename)-4:] != ".csv" {
+			http.Error(w, "Invalid filename format", http.StatusBadRequest)
+			return
+		}
+
+		// Construct file path
+		csvPath := fmt.Sprintf("/data/csv/%s", filename)
+
+		// Serve the file
+		http.ServeFile(w, r, csvPath)
+	})
+
 	go func() {
 		log.Info().Str("port", cfg.HTTPPort).Msg("HTTP health server listening")
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
