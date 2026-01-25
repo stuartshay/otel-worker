@@ -36,7 +36,7 @@ jobs:
           VERSION="1.0.${{ github.run_number }}"
           echo "Publishing version: ${VERSION}"
           buf push --create --create-visibility public --label "${VERSION}"
-          echo "✅ Published buf.build/stuartshay/otel-worker:${VERSION}"
+          echo "✅ Published buf.build/stuartshay-consulting/otel-worker:${VERSION}"
 
       - name: Summary
         run: |
@@ -44,11 +44,11 @@ jobs:
           echo "## 📦 Proto Published" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** ${VERSION}" >> $GITHUB_STEP_SUMMARY
-          REGISTRY="[buf.build/stuartshay/otel-worker]"
-          URL="(https://buf.build/stuartshay/otel-worker)"
+          REGISTRY="[buf.build/stuartshay-consulting/otel-worker]"
+          URL="(https://buf.build/stuartshay-consulting/otel-worker)"
           echo "**Registry:** ${REGISTRY}${URL}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Usage in Python" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "buf generate buf.build/stuartshay/otel-worker:${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "buf generate buf.build/stuartshay-consulting/otel-worker:${VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

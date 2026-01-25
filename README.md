@@ -5,7 +5,7 @@
 [![Docker](https://github.com/stuartshay/otel-worker/actions/workflows/docker.yml/badge.svg)](https://github.com/stuartshay/otel-worker/actions/workflows/docker.yml)
 [![Proto](https://github.com/stuartshay/otel-worker/actions/workflows/proto-publish.yml/badge.svg)](https://github.com/stuartshay/otel-worker/actions/workflows/proto-publish.yml)
 [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-stuartshay%2Fotel--worker-blue?logo=docker)](https://hub.docker.com/repository/docker/stuartshay/otel-worker)
-[![Buf Registry](https://img.shields.io/badge/Buf-stuartshay%2Fotel--worker-blue?logo=buf)](https://buf.build/stuartshay/otel-worker)
+[![Buf Registry](https://img.shields.io/badge/Buf-stuartshay--consulting%2Fotel--worker-blue?logo=buf)](https://buf.build/stuartshay-consulting/otel-worker)
 [![Go Version](https://img.shields.io/badge/Go-1.24-00ADD8?logo=go&logoColor=white)](https://golang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg?logo=renovatebot)](https://renovatebot.com)
