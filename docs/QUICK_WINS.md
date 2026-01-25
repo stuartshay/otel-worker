@@ -39,22 +39,31 @@ move the project forward. Focus on these before larger integration work.
 
 ### 🎯 Week 1 Focus
 
-#### 1. Health Check Endpoints ⚡ (30 minutes) - HIGHEST PRIORITY
+#### 1. Health Check Endpoints ⚡ (30 minutes) - ✅ COMPLETE
 
 **Why**: Required for Kubernetes liveness/readiness probes. Blocks deployment.
 
 **Tasks**:
 
-- [ ] Add HTTP server on port 8080 in `cmd/server/main.go`
-- [ ] Implement `GET /healthz` (liveness) - always returns 200
-- [ ] Implement `GET /readyz` (readiness) - checks database connectivity
-- [ ] Add graceful HTTP server shutdown
-- [ ] Test locally: `curl http://localhost:8080/healthz`
-- [ ] Update README.md with health check documentation
+- [x] Add HTTP server on port 8080 in `cmd/server/main.go`
+- [x] Implement `GET /healthz` (liveness) - always returns 200
+- [x] Implement `GET /readyz` (readiness) - checks database connectivity
+- [x] Add graceful HTTP server shutdown
+- [x] Test locally: `curl http://localhost:8080/healthz`
+- [x] Update README.md with health check documentation
 
+**Completed**: 2026-01-25
 **Estimated Time**: 30 minutes
 **Priority**: P0 - Blocks deployment
 **Dependencies**: None
+
+**Implementation Details**:
+
+- HTTP server runs on port 8080 with proper timeouts (10s read header, 30s read/write, 60s idle)
+- `/healthz` returns `{"status":"healthy","service":"otel-worker"}` (200 OK)
+- `/readyz` returns `{"status":"ready","database":"connected"}` (200 OK) or 503 if DB down
+- Graceful shutdown with 30-second timeout integrates with existing shutdown logic
+- Unit test added in `cmd/server/main_health_test.go`
 
 ---
 

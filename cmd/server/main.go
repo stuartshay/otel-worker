@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -103,6 +104,48 @@ func main() {
 		}
 	}()
 
+	// Start HTTP health check server
+	httpServer := &http.Server{
+		Addr:              fmt.Sprintf(":%s", cfg.HTTPPort),
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+
+	// Health check handlers
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		// Liveness probe - always returns 200 if service is running
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status":"healthy","service":"otel-worker"}`)) //nolint:errcheck // HTTP response write failure is not recoverable
+	})
+
+	http.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
+		// Readiness probe - checks database connectivity
+		ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+		defer cancel()
+
+		if err := dbClient.HealthCheck(ctx); err != nil {
+			log.Warn().Err(err).Msg("Readiness check failed: database unhealthy")
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = w.Write([]byte(fmt.Sprintf(`{"status":"not_ready","reason":"database_unavailable","error":"%s"}`, err.Error()))) //nolint:errcheck // HTTP response write failure is not recoverable
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status":"ready","service":"otel-worker","database":"connected"}`)) //nolint:errcheck // HTTP response write failure is not recoverable
+	})
+
+	go func() {
+		log.Info().Str("port", cfg.HTTPPort).Msg("HTTP health server listening")
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatal().Err(err).Msg("HTTP server failed")
+		}
+	}()
+
 	// Wait for interrupt signal
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -113,6 +156,13 @@ func main() {
 	// Graceful shutdown
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
+
+	// Shutdown HTTP server
+	if err := httpServer.Shutdown(shutdownCtx); err != nil {
+		log.Error().Err(err).Msg("HTTP server shutdown failed")
+	} else {
+		log.Info().Msg("HTTP server stopped")
+	}
 
 	// Stop gRPC server
 	stopped := make(chan struct{})
