@@ -73,7 +73,7 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 		SELECT
 			id, device_id, tid, latitude, longitude, accuracy,
 			altitude, velocity, battery, battery_status,
-			connection_type, trigger, timestamp, created_at
+			connection_type, trigger, EXTRACT(EPOCH FROM timestamp)::bigint AS timestamp, created_at
 		FROM public.locations
 		WHERE DATE(created_at) = $1
 	`
@@ -97,25 +97,55 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 	var locations []Location
 	for rows.Next() {
 		var loc Location
+		var accuracy, altitude, velocity, battery, timestamp sql.NullInt64
+		var batteryStatus, connectionType, trigger sql.NullString
+
 		err := rows.Scan(
 			&loc.ID,
 			&loc.DeviceID,
 			&loc.TID,
 			&loc.Latitude,
 			&loc.Longitude,
-			&loc.Accuracy,
-			&loc.Altitude,
-			&loc.Velocity,
-			&loc.Battery,
-			&loc.BatteryStatus,
-			&loc.ConnectionType,
-			&loc.Trigger,
-			&loc.Timestamp,
+			&accuracy,
+			&altitude,
+			&velocity,
+			&battery,
+			&batteryStatus,
+			&connectionType,
+			&trigger,
+			&timestamp,
 			&loc.CreatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("scan failed: %w", err)
 		}
+
+		// Convert NULL values to zero values
+		if accuracy.Valid {
+			loc.Accuracy = int(accuracy.Int64)
+		}
+		if altitude.Valid {
+			loc.Altitude = int(altitude.Int64)
+		}
+		if velocity.Valid {
+			loc.Velocity = int(velocity.Int64)
+		}
+		if battery.Valid {
+			loc.Battery = int(battery.Int64)
+		}
+		if timestamp.Valid {
+			loc.Timestamp = timestamp.Int64
+		}
+		if batteryStatus.Valid {
+			loc.BatteryStatus = batteryStatus.String
+		}
+		if connectionType.Valid {
+			loc.ConnectionType = connectionType.String
+		}
+		if trigger.Valid {
+			loc.Trigger = trigger.String
+		}
+
 		locations = append(locations, loc)
 	}
 
@@ -132,7 +162,7 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 		SELECT
 			id, device_id, tid, latitude, longitude, accuracy,
 			altitude, velocity, battery, battery_status,
-			connection_type, trigger, timestamp, created_at
+			connection_type, trigger, EXTRACT(EPOCH FROM timestamp)::bigint AS timestamp, created_at
 		FROM public.locations
 		WHERE created_at >= $1::date AND created_at < $2::date + interval '1 day'
 	`
@@ -155,25 +185,55 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 	var locations []Location
 	for rows.Next() {
 		var loc Location
+		var accuracy, altitude, velocity, battery, timestamp sql.NullInt64
+		var batteryStatus, connectionType, trigger sql.NullString
+
 		err := rows.Scan(
 			&loc.ID,
 			&loc.DeviceID,
 			&loc.TID,
 			&loc.Latitude,
 			&loc.Longitude,
-			&loc.Accuracy,
-			&loc.Altitude,
-			&loc.Velocity,
-			&loc.Battery,
-			&loc.BatteryStatus,
-			&loc.ConnectionType,
-			&loc.Trigger,
-			&loc.Timestamp,
+			&accuracy,
+			&altitude,
+			&velocity,
+			&battery,
+			&batteryStatus,
+			&connectionType,
+			&trigger,
+			&timestamp,
 			&loc.CreatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("scan failed: %w", err)
 		}
+
+		// Convert NULL values to zero values
+		if accuracy.Valid {
+			loc.Accuracy = int(accuracy.Int64)
+		}
+		if altitude.Valid {
+			loc.Altitude = int(altitude.Int64)
+		}
+		if velocity.Valid {
+			loc.Velocity = int(velocity.Int64)
+		}
+		if battery.Valid {
+			loc.Battery = int(battery.Int64)
+		}
+		if timestamp.Valid {
+			loc.Timestamp = timestamp.Int64
+		}
+		if batteryStatus.Valid {
+			loc.BatteryStatus = batteryStatus.String
+		}
+		if connectionType.Valid {
+			loc.ConnectionType = connectionType.String
+		}
+		if trigger.Valid {
+			loc.Trigger = trigger.String
+		}
+
 		locations = append(locations, loc)
 	}
 
