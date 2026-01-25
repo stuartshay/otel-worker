@@ -1,0 +1,82 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    "schedule:weekly",
+    "group:allNonMajor"
+  ],
+  "labels": ["dependencies", "renovate"],
+  "prHourlyLimit": 5,
+  "prConcurrentLimit": 10,
+  "timezone": "America/New_York",
+  "schedule": ["after 6am and before 9am every weekday"],
+  "packageRules": [
+    {
+      "description": "Go dependencies",
+      "matchManagers": ["gomod"],
+      "groupName": "Go dependencies",
+      "automerge": true,
+      "automergeType": "pr",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Go major updates",
+      "matchManagers": ["gomod"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "automerge": true,
+      "automergeType": "pr",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "GitHub Actions major updates",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Docker base images",
+      "matchManagers": ["dockerfile"],
+      "groupName": "Docker images",
+      "automerge": false
+    },
+    {
+      "description": "Pre-commit hooks",
+      "matchManagers": ["pre-commit"],
+      "groupName": "Pre-commit hooks",
+      "automerge": true,
+      "automergeType": "pr",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Protobuf/Buf dependencies",
+      "matchPackageNames": ["buf"],
+      "groupName": "Buf dependencies",
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ],
+  "gomod": {
+    "enabled": true,
+    "postUpdateOptions": ["gomodTidy"]
+  },
+  "dockerfile": {
+    "enabled": true
+  },
+  "pre-commit": {
+    "enabled": true
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"],
+    "automerge": true
+  }
+}
