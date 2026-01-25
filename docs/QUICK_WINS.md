@@ -88,27 +88,39 @@ move the project forward. Focus on these before larger integration work.
 
 ---
 
-#### 3. Kubernetes Manifests ⚡ (2 hours)
+#### 3. Kubernetes Manifests ⚡ (2 hours) - ✅ COMPLETE
 
 **Why**: Required to deploy to k8s-pi5-cluster. Sister projects (otel-demo, otel-ui) already deployed.
 
 **Tasks**:
 
-- [ ] Create `k8s-gitops/apps/base/otel-worker/` directory
-- [ ] Create `deployment.yaml` (2 replicas, gRPC port 50051, HTTP port 8080)
-- [ ] Create `service.yaml` (ClusterIP, gRPC endpoint)
-- [ ] Create `configmap.yaml` (home coordinates, threshold)
-- [ ] Create `secret.yaml` (SOPS-encrypted database credentials)
-- [ ] Create `pvc.yaml` (10Gi for CSV files)
-- [ ] Create `kustomization.yaml`
-- [ ] Add health/readiness probes using new endpoints
-- [ ] Configure resources (requests: 100m CPU, 256Mi; limits: 500m CPU, 512Mi)
-- [ ] Create cluster overlay in `clusters/k8s-pi5-cluster/apps/`
+- [x] Create `k8s-gitops/apps/base/otel-worker/` directory
+- [x] Create `deployment.yaml` (2 replicas, gRPC port 50051, HTTP port 8080)
+- [x] Create `service.yaml` (ClusterIP, gRPC endpoint)
+- [x] Create `configmap.yaml` (home coordinates, threshold)
+- [x] Create `secret.yaml` (SOPS-encrypted database credentials)
+- [x] Create `pvc.yaml` (10Gi for CSV files)
+- [x] Create `kustomization.yaml`
+- [x] Add health/readiness probes using new endpoints
+- [x] Configure resources (requests: 100m CPU, 256Mi; limits: 500m CPU, 512Mi)
+- [x] Create cluster overlay in `clusters/k8s-pi5-cluster/apps/`
 
+**Completed**: 2026-01-25
 **Estimated Time**: 2 hours
 **Priority**: P0 - Blocks deployment
-**Dependencies**: Health check endpoints (task #1)
+**Dependencies**: Health check endpoints (task #1) ✅
 **Reference**: Follow patterns from otel-demo and otel-ui
+
+**Implementation Details**:
+
+- Created 11 files in k8s-gitops repository
+- Validated with kubeconform (6/7 resources valid, SealedSecret is CRD)
+- Resources: 100m/256Mi requests, 500m/512Mi limits
+- 2 replicas for high availability
+- Health probes configured (10s/10s liveness, 5s/5s readiness)
+- 10Gi PVC on nfs-general storage class
+- Service exposes gRPC (50051) and HTTP (8080) ports
+- Committed to k8s-gitops main branch
 
 ---
 
