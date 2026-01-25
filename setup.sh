@@ -46,12 +46,34 @@ if [ "$GO_INSTALLED" = false ]; then
         echo "  Extracting to /usr/local/go..."
         sudo tar -C /usr/local -xzf "/tmp/$GO_TARBALL"
 
-        # Add to PATH if not already there
-        if ! grep -q "/usr/local/go/bin" ~/.bashrc; then
-            echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
-            echo 'export PATH=$PATH:$(go env GOPATH)/bin' >> ~/.bashrc
-            echo "  Added Go to PATH in ~/.bashrc"
+        # Detect shell and add to PATH if not already there
+        SHELL_RC_FILES=()
+
+        # Check for bash
+        if [ -f "$HOME/.bashrc" ]; then
+            SHELL_RC_FILES+=("$HOME/.bashrc")
         fi
+
+        # Check for zsh
+        if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then
+            if [ -f "$HOME/.zshrc" ]; then
+                SHELL_RC_FILES+=("$HOME/.zshrc")
+            else
+                touch "$HOME/.zshrc"
+                SHELL_RC_FILES+=("$HOME/.zshrc")
+            fi
+        fi
+
+        # Add Go to PATH in all detected shell configs
+        for RC_FILE in "${SHELL_RC_FILES[@]}"; do
+            if ! grep -q "/usr/local/go/bin" "$RC_FILE"; then
+                echo '' >> "$RC_FILE"
+                echo '# Go programming language' >> "$RC_FILE"
+                echo 'export PATH=$PATH:/usr/local/go/bin' >> "$RC_FILE"
+                echo 'export PATH=$PATH:$(go env GOPATH)/bin' >> "$RC_FILE"
+                echo "  Added Go to PATH in $RC_FILE"
+            fi
+        done
 
         export PATH=$PATH:/usr/local/go/bin
         export PATH=$PATH:$(go env GOPATH)/bin
