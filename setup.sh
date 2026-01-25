@@ -165,6 +165,28 @@ else
     echo "✓ golangci-lint installed"
 fi
 
+# Install grpcurl for testing gRPC services
+echo ""
+echo "Checking grpcurl..."
+if command -v grpcurl &> /dev/null; then
+    echo "✓ grpcurl is already installed: $(grpcurl --version 2>&1 | head -n1)"
+else
+    echo "Installing grpcurl..."
+    go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+    echo "✓ grpcurl installed"
+fi
+
+# Install grpcui for interactive gRPC testing
+echo ""
+echo "Checking grpcui..."
+if command -v grpcui &> /dev/null; then
+    echo "✓ grpcui is already installed"
+else
+    echo "Installing grpcui..."
+    go install github.com/fullstorydev/grpcui/cmd/grpcui@latest
+    echo "✓ grpcui installed"
+fi
+
 # Ensure ~/.local/bin is in PATH for pip user installs
 echo ""
 echo "Checking ~/.local/bin in PATH..."
