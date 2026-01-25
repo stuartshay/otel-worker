@@ -39,7 +39,7 @@ CREATE TABLE public.locations (
     battery_status   VARCHAR,
     connection_type  VARCHAR,
     trigger          VARCHAR,
-    timestamp        BIGINT,
+    timestamp        TIMESTAMP WITH TIME ZONE,
     created_at       TIMESTAMP,
     raw_payload      JSONB
 );
@@ -61,7 +61,7 @@ CREATE TABLE public.locations (
 | battery_status | VARCHAR | Battery status (e.g., "charging", "full", "unplugged") |
 | connection_type | VARCHAR | Network connection type (e.g., "wifi", "mobile") |
 | trigger | VARCHAR | Event trigger type (e.g., "manual", "timer", "region") |
-| timestamp | BIGINT | Unix timestamp (seconds since epoch) |
+| timestamp | TIMESTAMP WITH TIME ZONE | Location event timestamp (extracted as Unix epoch in queries) |
 | created_at | TIMESTAMP | Database insertion timestamp |
 | raw_payload | JSONB | Original OwnTracks JSON payload |
 
