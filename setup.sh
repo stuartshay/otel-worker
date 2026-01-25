@@ -154,6 +154,17 @@ echo "Installing goimports..."
 go install golang.org/x/tools/cmd/goimports@latest
 echo "✓ goimports installed"
 
+# Install golangci-lint for linting
+echo ""
+echo "Checking golangci-lint..."
+if command -v golangci-lint &> /dev/null; then
+    echo "✓ golangci-lint is already installed: $(golangci-lint --version | head -n1)"
+else
+    echo "Installing golangci-lint..."
+    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    echo "✓ golangci-lint installed"
+fi
+
 # Ensure ~/.local/bin is in PATH for pip user installs
 echo ""
 echo "Checking ~/.local/bin in PATH..."
