@@ -51,15 +51,15 @@ func InitTracer(cfg Config) (func(context.Context) error, error) {
 	}
 
 	// Create resource with service information
-	res, err := resource.Merge(
-		resource.Default(),
-		resource.NewWithAttributes(
-			semconv.SchemaURL,
+	res, err := resource.New(
+		ctx,
+		resource.WithAttributes(
 			semconv.ServiceName(cfg.ServiceName),
 			semconv.ServiceNamespace(cfg.ServiceNamespace),
 			semconv.ServiceVersion(cfg.ServiceVersion),
 			semconv.DeploymentEnvironment(cfg.Environment),
 		),
+		resource.WithSchemaURL(semconv.SchemaURL),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create resource: %w", err)
