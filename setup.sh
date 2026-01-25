@@ -7,6 +7,8 @@ echo ""
 
 # Detect OS
 OS=$(uname -s)
+# ARCH is available for future architecture-specific logic
+# shellcheck disable=SC2034
 ARCH=$(uname -m)
 
 # Check if Go is already installed
@@ -76,7 +78,8 @@ if [ "$GO_INSTALLED" = false ]; then
         done
 
         export PATH=$PATH:/usr/local/go/bin
-        export PATH=$PATH:$(go env GOPATH)/bin
+        GOPATH_BIN=$(go env GOPATH)/bin
+        export PATH=$PATH:$GOPATH_BIN
 
         rm "/tmp/$GO_TARBALL"
         echo "✓ Go $GO_VERSION installed successfully"
@@ -133,7 +136,8 @@ fi
 
 # Ensure GOPATH/bin is in PATH
 if [ -z "$GOPATH" ]; then
-    export GOPATH=$(go env GOPATH)
+    GOPATH=$(go env GOPATH)
+    export GOPATH
 fi
 export PATH=$PATH:$GOPATH/bin
 
@@ -150,11 +154,47 @@ echo "Installing goimports..."
 go install golang.org/x/tools/cmd/goimports@latest
 echo "✓ goimports installed"
 
+# Ensure ~/.local/bin is in PATH for pip user installs
+echo ""
+echo "Checking ~/.local/bin in PATH..."
+SHELL_RC_FILES_LOCAL=()
+
+# Check for bash
+if [ -f "$HOME/.bashrc" ]; then
+    SHELL_RC_FILES_LOCAL+=("$HOME/.bashrc")
+fi
+
+# Check for zsh
+if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]; then
+    if [ -f "$HOME/.zshrc" ]; then
+        SHELL_RC_FILES_LOCAL+=("$HOME/.zshrc")
+    else
+        touch "$HOME/.zshrc"
+        SHELL_RC_FILES_LOCAL+=("$HOME/.zshrc")
+    fi
+fi
+
+# Add ~/.local/bin to PATH in all detected shell configs
+for RC_FILE in "${SHELL_RC_FILES_LOCAL[@]}"; do
+    if ! grep -q 'export PATH="\$HOME/.local/bin:\$PATH"' "$RC_FILE" && ! grep -q "export PATH=\"\$HOME/.local/bin:\$PATH\"" "$RC_FILE" && ! grep -q '\$HOME/.local/bin' "$RC_FILE"; then
+        echo '' >> "$RC_FILE"
+        echo '# User local binaries (pip --user installs)' >> "$RC_FILE"
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
+        echo "  Added ~/.local/bin to PATH in $RC_FILE"
+    fi
+done
+
+# Export for current session
+export PATH="$HOME/.local/bin:$PATH"
+echo "✓ ~/.local/bin added to PATH"
+
 # Install pre-commit
 echo ""
 echo "Checking pre-commit..."
-if command -v pre-commit &> /dev/null; then
-    echo "✓ pre-commit is already installed: $(pre-commit --version)"
+if command -v pre-commit &> /dev/null || [ -x "$HOME/.local/bin/pre-commit" ]; then
+    PRE_COMMIT_CMD="pre-commit"
+    [ -x "$HOME/.local/bin/pre-commit" ] && PRE_COMMIT_CMD="$HOME/.local/bin/pre-commit"
+    echo "✓ pre-commit is already installed: $($PRE_COMMIT_CMD --version)"
 else
     echo "Installing pre-commit..."
 
