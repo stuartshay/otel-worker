@@ -6,9 +6,45 @@
 **Type**: Go gRPC Microservice
 **Purpose**: Calculate distance-from-home metrics using OwnTracks GPS data
 **Started**: 2026-01-24
+**Last Updated**: 2026-01-25
 **Target Cluster**: k8s-pi5-cluster
 **Home Location**: 40.736097°N, 74.039373°W
-**Database**: PostgreSQL (192.168.1.175:5432/owntracks)
+**Database**: PostgreSQL (192.168.1.175:6432/owntracks via PgBouncer)
+**Docker Hub**: stuartshay/otel-worker
+**Buf Registry**: stuartshay-consulting/otel-worker
+
+## Current Status
+
+**Overall Progress**: ~55% complete
+
+| Phase | Status | Completion |
+|-------|--------|------------|
+| Phase 1: Investigation & Setup | ✅ COMPLETE | 100% |
+| Phase 2: Core Implementation | ✅ COMPLETE | 100% |
+| Phase 3: Testing & Quality | 🟡 IN PROGRESS | 50% |
+| Phase 4: Containerization & Deployment | 🟡 IN PROGRESS | 50% |
+| Phase 5: Observability & Monitoring | ❌ PLANNED | 0% |
+| Phase 6: Integration & Documentation | ❌ PLANNED | 0% |
+
+**Next Immediate Task**: Implement health check endpoints (30 min) - **Blocks K8s deployment**
+
+### Recent Accomplishments (2026-01-25)
+
+- ✅ Fixed all 27 golangci-lint errors
+- ✅ Added semantic versioning to Docker builds (1.0.{BUILD_NUMBER})
+- ✅ Fixed pre-commit hooks (converted to local)
+- ✅ Added zsh support to setup.sh
+- ✅ All GitHub Actions workflows passing
+- ✅ Docker image optimized to 14.9MB
+
+### Critical Path Forward
+
+1. **Now**: Health checks (30 min) ← **YOU ARE HERE**
+2. **Next**: gRPC handler tests (2-3 hrs)
+3. **Then**: K8s manifests (2 hrs)
+4. **Finally**: Deploy to k8s-pi5-cluster (1 hr)
+
+See [QUICK_WINS.md](QUICK_WINS.md) for detailed task breakdown.
 
 ## Implementation Roadmap
 
@@ -109,17 +145,20 @@
 - [x] Handle OS signals for graceful shutdown
 - [x] Add structured logging (zerolog)
 
-### Phase 3: Testing & Quality ⏳ IN PROGRESS
+### Phase 3: Testing & Quality ⏳ IN PROGRESS (50% complete)
+
+**Last Updated**: 2026-01-25
 
 #### Unit Tests
 
-- [x] Test haversine distance calculations
+- [x] Test haversine distance calculations (100% coverage)
+- [x] Test job queue operations (92% coverage)
+- [x] Test configuration loading (100% coverage)
+- [x] Test database client basic operations (13.3% coverage - needs expansion)
 - [ ] Test trip detection logic (not implemented - simplified design)
-- [ ] Test data quality filters
 - [ ] Test CSV generation
-- [x] Test job queue operations
-- [x] Test configuration loading
-- [ ] Achieve 80%+ code coverage (partial - calculator, config, database, queue tested)
+- [ ] **HIGH PRIORITY**: Test gRPC handlers (currently 0% coverage)
+- [ ] Achieve 80%+ code coverage (current: ~50% overall)
 
 #### Integration Tests
 
@@ -148,40 +187,55 @@
 - [ ] Check for race conditions (go test -race)
 - [ ] Run static analysis
 
-### Phase 4: Containerization & Deployment ⏳ IN PROGRESS
+### Phase 4: Containerization & Deployment ⏳ IN PROGRESS (50% complete)
+
+**Last Updated**: 2026-01-25
 
 #### Docker
 
 - [x] Create multi-stage Dockerfile
 - [x] Use golang:1.24-alpine for builder
 - [x] Use distroless/static for runtime
-- [x] Optimize image size (< 20MB) - achieved 14.9MB
+- [x] Optimize image size (< 20MB) - **achieved 14.9MB** ✨
 - [x] Add non-root user for security
 - [x] Build and test locally
-- [ ] Push to Docker Hub (stuartshay/otel-worker)
+- [x] Configure multi-arch builds (amd64/arm64)
+- [x] Add semantic versioning: `1.0.{BUILD_NUMBER}`
+- [ ] **HIGH PRIORITY**: Push to Docker Hub (stuartshay/otel-worker) - repo exists, needs images
 
 #### GitHub Actions
 
-- [x] Create .github/workflows/lint.yml (Go, Markdown, YAML, Dockerfile, Protobuf)
-- [x] Create .github/workflows/test.yml (unit tests, integration tests with PostgreSQL)
-- [x] Create .github/workflows/docker.yml (multi-arch builds, Trivy scanning)
-- [x] Add version tagging on merge to main
+- [x] Create .github/workflows/lint.yml (Go, Markdown, YAML, Dockerfile, Protobuf) ✅
+- [x] Create .github/workflows/test.yml (unit tests, integration tests with PostgreSQL) ✅
+- [x] Create .github/workflows/docker.yml (multi-arch builds, Trivy scanning) ✅
+- [x] Create .github/workflows/proto-publish.yml (Buf Schema Registry) ✅
+- [x] Add version tagging on merge to main (semantic versioning)
 - [x] Add Trivy vulnerability scanning
 - [x] Add database schema initialization for integration tests
+- [x] Fix all golangci-lint errors (27 errors resolved) ✨
+- [x] Configure local pre-commit hooks for reliability
 - [ ] Configure Docker Hub credentials (secrets: DOCKERHUB_USERNAME, DOCKERHUB_TOKEN)
-- [ ] Add build status badges to README
+- [x] Add build status badges to README
+
+**Status**: All workflows passing ✅
 
 #### Kubernetes Manifests
+
+**Status**: Not started - **HIGH PRIORITY** 🚨
+**Repository**: k8s-gitops (k8s-pi5-cluster)
+**Reference**: Follow patterns from otel-demo and otel-ui (already deployed)
 
 - [ ] Create apps/base/otel-worker/deployment.yaml
 - [ ] Create apps/base/otel-worker/service.yaml
 - [ ] Create apps/base/otel-worker/configmap.yaml
-- [ ] Create apps/base/otel-worker/secret.yaml
+- [ ] Create apps/base/otel-worker/secret.yaml (SOPS-encrypted)
 - [ ] Create apps/base/otel-worker/pvc.yaml
 - [ ] Create apps/base/otel-worker/kustomization.yaml
 - [ ] Add cluster overlay in clusters/k8s-pi5-cluster/
-- [ ] Configure resource limits (200m CPU, 512Mi memory)
-- [ ] Add health/readiness probes
+- [ ] Configure resource limits (requests: 100m CPU, 256Mi; limits: 500m CPU, 512Mi)
+- [ ] Add health/readiness probes (requires health check endpoints first)
+
+**Blockers**: Health check endpoints not implemented yet (see Phase 5)
 
 #### GitOps Integration
 
@@ -194,6 +248,23 @@
 - [ ] Test gRPC connectivity
 
 ### Phase 5: Observability & Monitoring 📊 PLANNED
+
+**Status**: Not started - Health checks are **HIGHEST PRIORITY** 🚨
+**Blocker**: Health endpoints required for Kubernetes deployment
+
+#### Health Checks - **NEXT IMMEDIATE TASK**
+
+- [ ] **HIGH PRIORITY**: Implement /healthz (liveness probe)
+- [ ] **HIGH PRIORITY**: Implement /readyz (readiness probe)
+- [ ] Start HTTP server on port 8080
+- [ ] Check database connectivity for readiness
+- [ ] Check queue health
+- [ ] Return proper HTTP status codes (200, 503)
+- [ ] Add graceful HTTP server shutdown
+- [ ] Document in README.md
+
+**Estimated Time**: 30 minutes
+**Impact**: Unblocks Kubernetes deployment (Phase 4)
 
 #### OpenTelemetry Integration
 

@@ -145,6 +145,7 @@ Kubernetes manifests are managed in the [k8s-gitops](https://github.com/stuartsh
 
 ## Documentation
 
+- [QUICK_WINS.md](docs/QUICK_WINS.md) - Immediate priority tasks (~55% project complete)
 - [PROJECT_PLAN.md](docs/PROJECT_PLAN.md) - Implementation roadmap
 - [DATABASE.md](docs/DATABASE.md) - Database schema and query patterns
 - [DOCKER_BUILD.md](docs/DOCKER_BUILD.md) - Docker build and deployment guide
