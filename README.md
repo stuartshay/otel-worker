@@ -145,10 +145,13 @@ Kubernetes manifests are managed in the [k8s-gitops](https://github.com/stuartsh
 
 ## Documentation
 
-- [QUICK_WINS.md](docs/QUICK_WINS.md) - Immediate priority tasks (~55% project complete)
-- [PROJECT_PLAN.md](docs/PROJECT_PLAN.md) - Implementation roadmap
+- [QUICK_WINS.md](docs/QUICK_WINS.md) - **START HERE** - Immediate priority tasks (60% complete)
+- [DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) - **Step-by-step deployment to k8s-pi5-cluster**
+- [PROGRESS_REPORT.md](docs/PROGRESS_REPORT.md) - Today's accomplishments and next steps
+- [PROJECT_PLAN.md](docs/PROJECT_PLAN.md) - Complete implementation roadmap
 - [DATABASE.md](docs/DATABASE.md) - Database schema and query patterns
-- [DOCKER_BUILD.md](docs/DOCKER_BUILD.md) - Docker build and deployment guide
+- [DOCKER_BUILD.md](docs/DOCKER_BUILD.md) - Docker build and optimization guide
+- [DOCKER_HUB_SETUP.md](docs/DOCKER_HUB_SETUP.md) - Docker Hub publishing instructions
 - [GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md) - CI/CD workflows documentation
 - [AGENTS.md](AGENTS.md) - Quick reference for automation/developers
 
