@@ -18,10 +18,10 @@ func TestLocationStruct(t *testing.T) {
 		Latitude:       40.736097,
 		Longitude:      -74.039373,
 		Accuracy:       10,
-		Altitude:       15,
+		Altitude:       15.5,
 		Velocity:       0,
 		Battery:        85,
-		BatteryStatus:  "unplugged",
+		BatteryStatus:  2, // 1=Unknown, 2=Unplugged, 3=Charging, 4=Full
 		ConnectionType: "wifi",
 		Trigger:        "timer",
 		Timestamp:      time.Now().Unix(),

@@ -24,13 +24,13 @@ type Location struct {
 	Latitude       float64
 	Longitude      float64
 	Accuracy       int
-	Altitude       int
+	Altitude       float64 // double precision in DB
 	Velocity       int
 	Battery        int
-	BatteryStatus  string
+	BatteryStatus  int // integer in DB (1=Unknown, 2=Unplugged, 3=Charging, 4=Full)
 	ConnectionType string
 	Trigger        string
-	Timestamp      int64
+	Timestamp      int64 // Extracted from TIMESTAMP WITH TIME ZONE via EXTRACT(EPOCH)
 	CreatedAt      time.Time
 }
 
@@ -97,8 +97,10 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 	var locations []Location
 	for rows.Next() {
 		var loc Location
-		var accuracy, altitude, velocity, battery, timestamp sql.NullInt64
-		var batteryStatus, connectionType, trigger sql.NullString
+		var accuracy, velocity, battery, timestamp sql.NullInt64
+		var altitude sql.NullFloat64
+		var batteryStatus sql.NullInt64
+		var connectionType, trigger sql.NullString
 
 		err := rows.Scan(
 			&loc.ID,
@@ -125,7 +127,7 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 			loc.Accuracy = int(accuracy.Int64)
 		}
 		if altitude.Valid {
-			loc.Altitude = int(altitude.Int64)
+			loc.Altitude = altitude.Float64
 		}
 		if velocity.Valid {
 			loc.Velocity = int(velocity.Int64)
@@ -137,7 +139,7 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 			loc.Timestamp = timestamp.Int64
 		}
 		if batteryStatus.Valid {
-			loc.BatteryStatus = batteryStatus.String
+			loc.BatteryStatus = int(batteryStatus.Int64)
 		}
 		if connectionType.Valid {
 			loc.ConnectionType = connectionType.String
@@ -185,8 +187,10 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 	var locations []Location
 	for rows.Next() {
 		var loc Location
-		var accuracy, altitude, velocity, battery, timestamp sql.NullInt64
-		var batteryStatus, connectionType, trigger sql.NullString
+		var accuracy, velocity, battery, timestamp sql.NullInt64
+		var altitude sql.NullFloat64
+		var batteryStatus sql.NullInt64
+		var connectionType, trigger sql.NullString
 
 		err := rows.Scan(
 			&loc.ID,
@@ -213,7 +217,7 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 			loc.Accuracy = int(accuracy.Int64)
 		}
 		if altitude.Valid {
-			loc.Altitude = int(altitude.Int64)
+			loc.Altitude = altitude.Float64
 		}
 		if velocity.Valid {
 			loc.Velocity = int(velocity.Int64)
@@ -225,7 +229,7 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 			loc.Timestamp = timestamp.Int64
 		}
 		if batteryStatus.Valid {
-			loc.BatteryStatus = batteryStatus.String
+			loc.BatteryStatus = int(batteryStatus.Int64)
 		}
 		if connectionType.Valid {
 			loc.ConnectionType = connectionType.String
