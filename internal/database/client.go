@@ -9,7 +9,12 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 )
+
+var tracer = otel.Tracer("github.com/stuartshay/otel-worker/internal/database")
 
 // Client wraps a PostgreSQL database connection
 type Client struct {
@@ -69,6 +74,16 @@ func (c *Client) Close() error {
 // GetLocationsByDate retrieves GPS locations for a specific date
 // Date should be in YYYY-MM-DD format
 func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID string) ([]Location, error) {
+	ctx, span := tracer.Start(ctx, "GetLocationsByDate")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("db.date", date),
+		attribute.String("db.device_id", deviceID),
+		attribute.String("db.system", "postgresql"),
+		attribute.String("db.operation", "SELECT"),
+	)
+
 	query := `
 		SELECT
 			id, device_id, tid, latitude, longitude, accuracy,
@@ -90,6 +105,8 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 
 	rows, err := c.db.QueryContext(ctx, query, args...)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "query failed")
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
 	defer func() { _ = rows.Close() }() // nolint:errcheck // Close in defer, error not actionable
@@ -119,6 +136,8 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 			&loc.CreatedAt,
 		)
 		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, "scan failed")
 			return nil, fmt.Errorf("scan failed: %w", err)
 		}
 
@@ -152,14 +171,29 @@ func (c *Client) GetLocationsByDate(ctx context.Context, date string, deviceID s
 	}
 
 	if err := rows.Err(); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "rows iteration failed")
 		return nil, fmt.Errorf("rows iteration failed: %w", err)
 	}
 
+	span.SetAttributes(attribute.Int("db.result_count", len(locations)))
+	span.SetStatus(codes.Ok, "query succeeded")
 	return locations, nil
 }
 
 // GetLocationsByDateRange retrieves GPS locations within a date range
 func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate string, deviceID string) ([]Location, error) {
+	ctx, span := tracer.Start(ctx, "GetLocationsByDateRange")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("db.start_date", startDate),
+		attribute.String("db.end_date", endDate),
+		attribute.String("db.device_id", deviceID),
+		attribute.String("db.system", "postgresql"),
+		attribute.String("db.operation", "SELECT"),
+	)
+
 	query := `
 		SELECT
 			id, device_id, tid, latitude, longitude, accuracy,
@@ -180,6 +214,8 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 
 	rows, err := c.db.QueryContext(ctx, query, args...)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "query failed")
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
 	defer func() { _ = rows.Close() }() // nolint:errcheck // Close in defer, error not actionable
@@ -209,6 +245,8 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 			&loc.CreatedAt,
 		)
 		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, "scan failed")
 			return nil, fmt.Errorf("scan failed: %w", err)
 		}
 
@@ -242,14 +280,26 @@ func (c *Client) GetLocationsByDateRange(ctx context.Context, startDate, endDate
 	}
 
 	if err := rows.Err(); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "rows iteration failed")
 		return nil, fmt.Errorf("rows iteration failed: %w", err)
 	}
 
+	span.SetAttributes(attribute.Int("db.result_count", len(locations)))
+	span.SetStatus(codes.Ok, "query succeeded")
 	return locations, nil
 }
 
 // GetDevices returns a list of unique device IDs from the database
 func (c *Client) GetDevices(ctx context.Context) ([]string, error) {
+	ctx, span := tracer.Start(ctx, "GetDevices")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("db.system", "postgresql"),
+		attribute.String("db.operation", "SELECT DISTINCT"),
+	)
+
 	query := `
 		SELECT DISTINCT device_id
 		FROM public.locations
@@ -259,6 +309,8 @@ func (c *Client) GetDevices(ctx context.Context) ([]string, error) {
 
 	rows, err := c.db.QueryContext(ctx, query)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "query failed")
 		return nil, fmt.Errorf("query failed: %w", err)
 	}
 	defer func() { _ = rows.Close() }() // nolint:errcheck // Close in defer, error not actionable
@@ -267,15 +319,21 @@ func (c *Client) GetDevices(ctx context.Context) ([]string, error) {
 	for rows.Next() {
 		var deviceID string
 		if err := rows.Scan(&deviceID); err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, "scan failed")
 			return nil, fmt.Errorf("scan failed: %w", err)
 		}
 		devices = append(devices, deviceID)
 	}
 
 	if err := rows.Err(); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "rows iteration failed")
 		return nil, fmt.Errorf("rows iteration failed: %w", err)
 	}
 
+	span.SetAttributes(attribute.Int("db.device_count", len(devices)))
+	span.SetStatus(codes.Ok, "query succeeded")
 	return devices, nil
 }
 

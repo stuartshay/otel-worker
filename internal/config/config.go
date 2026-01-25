@@ -13,10 +13,12 @@ import (
 // Config holds all configuration for the application
 type Config struct {
 	// Service configuration
-	ServiceName string
-	Environment string
-	GRPCPort    string
-	HTTPPort    string
+	ServiceName      string
+	ServiceVersion   string
+	ServiceNamespace string
+	Environment      string
+	GRPCPort         string
+	HTTPPort         string
 
 	// Database configuration
 	PostgresHost     string
@@ -36,6 +38,7 @@ type Config struct {
 	CSVOutputPath string
 
 	// OpenTelemetry configuration
+	OTELEnabled  bool
 	OTELEndpoint string
 
 	// Logging
@@ -48,10 +51,12 @@ func Load() (*Config, error) {
 	_ = godotenv.Load() // nolint:errcheck // .env file is optional, defaults are used if missing
 
 	cfg := &Config{
-		ServiceName: getEnv("SERVICE_NAME", "otel-worker"),
-		Environment: getEnv("ENVIRONMENT", "development"),
-		GRPCPort:    getEnv("GRPC_PORT", "50051"),
-		HTTPPort:    getEnv("HTTP_PORT", "8080"),
+		ServiceName:      getEnv("SERVICE_NAME", "otel-worker"),
+		ServiceVersion:   getEnv("SERVICE_VERSION", "1.0.0"),
+		ServiceNamespace: getEnv("SERVICE_NAMESPACE", "otel-worker"),
+		Environment:      getEnv("ENVIRONMENT", "development"),
+		GRPCPort:         getEnv("GRPC_PORT", "50051"),
+		HTTPPort:         getEnv("HTTP_PORT", "8080"),
 
 		PostgresHost:     getEnv("POSTGRES_HOST", "192.168.1.175"),
 		PostgresPort:     getEnv("POSTGRES_PORT", "6432"),
@@ -60,6 +65,7 @@ func Load() (*Config, error) {
 		PostgresPassword: getEnv("POSTGRES_PASSWORD", "development"),
 
 		CSVOutputPath: getEnv("CSV_OUTPUT_PATH", "/data/csv"),
+		OTELEnabled:   getEnv("OTEL_ENABLED", "false") == "true",
 		OTELEndpoint:  getEnv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317"),
 		LogLevel:      getEnv("LOG_LEVEL", "info"),
 	}

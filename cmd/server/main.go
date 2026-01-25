@@ -14,6 +14,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -22,10 +23,11 @@ import (
 	"github.com/stuartshay/otel-worker/internal/config"
 	"github.com/stuartshay/otel-worker/internal/database"
 	grpcserver "github.com/stuartshay/otel-worker/internal/grpc"
+	"github.com/stuartshay/otel-worker/internal/tracing"
 	distancev1 "github.com/stuartshay/otel-worker/proto/distance/v1"
 )
 
-func main() {
+func main() { // nolint:gocyclo // Main function complexity is acceptable for server initialization
 	// Initialize structured logging
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339})
@@ -51,10 +53,42 @@ func main() {
 		Float64("home_lon", cfg.HomeLongitude).
 		Msg("Configuration loaded")
 
+	// Initialize OpenTelemetry tracing
+	var shutdownTracer func(context.Context) error
+	if cfg.OTELEnabled {
+		st, err := tracing.InitTracer(tracing.Config{
+			ServiceName:      cfg.ServiceName,
+			ServiceNamespace: cfg.ServiceNamespace,
+			ServiceVersion:   cfg.ServiceVersion,
+			Environment:      cfg.Environment,
+			OTLPEndpoint:     cfg.OTELEndpoint,
+			Enabled:          cfg.OTELEnabled,
+		})
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to initialize OpenTelemetry tracing")
+		} else {
+			shutdownTracer = st
+			log.Info().
+				Str("endpoint", cfg.OTELEndpoint).
+				Msg("OpenTelemetry tracing initialized")
+		}
+	} else {
+		log.Info().Msg("OpenTelemetry tracing disabled")
+	}
+
+	// Defer tracer shutdown if initialized
+	defer func() {
+		if shutdownTracer != nil {
+			if shutdownErr := shutdownTracer(context.Background()); shutdownErr != nil {
+				log.Error().Err(shutdownErr).Msg("Failed to shutdown OpenTelemetry tracer")
+			}
+		}
+	}()
+
 	// Initialize database client
 	dbClient, err := database.NewClient(cfg.DatabaseDSN())
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to initialize database client")
+		log.Fatal().Err(err).Msg("Failed to initialize database client") // nolint:gocritic // Fatal error before service starts is acceptable
 	}
 	defer func() {
 		if closeErr := dbClient.Close(); closeErr != nil {
@@ -76,8 +110,14 @@ func main() {
 
 	log.Info().Msg("Database health check passed")
 
-	// Initialize gRPC server
-	grpcServer := grpc.NewServer()
+	// Initialize gRPC server with OpenTelemetry interceptors
+	var serverOpts []grpc.ServerOption
+	if cfg.OTELEnabled {
+		serverOpts = append(serverOpts,
+			grpc.StatsHandler(otelgrpc.NewServerHandler()),
+		)
+	}
+	grpcServer := grpc.NewServer(serverOpts...)
 
 	// Register distance service
 	distanceServer := grpcserver.NewServer(cfg, dbClient)
