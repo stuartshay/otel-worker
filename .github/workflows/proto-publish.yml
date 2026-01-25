@@ -1,0 +1,54 @@
+name: Publish Proto
+
+'on':
+  push:
+    branches: [main]
+    paths:
+      - 'proto/**'
+      - 'buf.yaml'
+      - 'buf.gen.yaml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish to Buf Registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Buf lint
+        run: buf lint
+
+      - name: Buf format check
+        run: buf format --diff --exit-code
+
+      - name: Login to Buf Schema Registry
+        env:
+          BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
+        run: echo "${BUF_TOKEN}" | buf registry login --token-stdin
+
+      - name: Push to Buf Schema Registry
+        run: |
+          VERSION="1.0.${{ github.run_number }}"
+          echo "Publishing version: ${VERSION}"
+          buf push --tag "${VERSION}"
+          echo "✅ Published buf.build/stuartshay/otel-worker:${VERSION}"
+
+      - name: Summary
+        run: |
+          VERSION="1.0.${{ github.run_number }}"
+          echo "## 📦 Proto Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${VERSION}" >> $GITHUB_STEP_SUMMARY
+          REGISTRY="[buf.build/stuartshay/otel-worker]"
+          URL="(https://buf.build/stuartshay/otel-worker)"
+          echo "**Registry:** ${REGISTRY}${URL}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Usage in Python" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "buf generate buf.build/stuartshay/otel-worker:${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
