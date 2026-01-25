@@ -16,14 +16,26 @@ repos:
       - id: mixed-line-ending
 
   # Go formatting
-  - repo: https://github.com/dnephin/pre-commit-golang
-    rev: v0.5.1
+  - repo: local
     hooks:
       - id: go-fmt
+        name: go fmt
+        entry: bash -c 'gofmt -w -s .'
+        language: system
+        files: \.go$
+        pass_filenames: false
       - id: go-imports
+        name: go imports
+        entry: bash -c 'goimports -w .'
+        language: system
+        files: \.go$
+        pass_filenames: false
       - id: go-mod-tidy
-      # go-vet disabled: covered by golangci-lint in CI
-      # go-unit-tests disabled: PATH issue with pre-commit isolation, use 'make test' or CI
+        name: go mod tidy
+        entry: bash -c 'go mod tidy'
+        language: system
+        files: (\.go|go\.mod|go\.sum)$
+        pass_filenames: false
 
   # Markdown linting
   - repo: https://github.com/igorshubovych/markdownlint-cli

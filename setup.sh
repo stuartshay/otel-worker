@@ -122,6 +122,12 @@ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 echo "✓ protoc-gen-go and protoc-gen-go-grpc installed"
 
+# Install goimports for code formatting
+echo ""
+echo "Installing goimports..."
+go install golang.org/x/tools/cmd/goimports@latest
+echo "✓ goimports installed"
+
 # Install pre-commit
 echo ""
 echo "Checking pre-commit..."
