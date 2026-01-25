@@ -15,8 +15,11 @@ RUN go mod download
 # Copy source code
 COPY . .
 
+# Build arguments for multi-arch support
+ARG TARGETARCH
+
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build \
     -ldflags="-w -s" \
     -o otel-worker \
     cmd/server/main.go
