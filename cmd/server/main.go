@@ -194,8 +194,8 @@ func main() { // nolint:gocyclo // Main function complexity is acceptable for se
 			return
 		}
 
-		// Construct file path
-		csvPath := fmt.Sprintf("/data/csv/%s", filename)
+		// Construct file path using configured CSV output path
+		csvPath := fmt.Sprintf("%s/%s", cfg.CSVOutputPath, filename)
 
 		// Serve the file
 		http.ServeFile(w, r, csvPath)
