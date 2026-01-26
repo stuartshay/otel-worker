@@ -57,6 +57,23 @@
 
   // Terminal settings
   "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.profiles.linux": {
+    "zsh": {
+      "path": "/usr/bin/zsh",
+      "icon": "terminal"
+    },
+    "bash": {
+      "path": "/bin/bash",
+      "icon": "terminal-bash"
+    }
+  },
+  "terminal.integrated.profiles.osx": {
+    "zsh": {
+      "path": "/bin/zsh",
+      "icon": "terminal"
+    }
+  },
 
   // Search exclusions
   "search.exclude": {
