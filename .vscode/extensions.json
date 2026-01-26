@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "golang.Go",
+    "drblury.protobuf-vsc",
+    "redhat.vscode-yaml",
+    "streetsidesoftware.code-spell-checker",
+    "ms-vscode.makefile-tools",
+    "ms-azuretools.vscode-docker",
+    "DavidAnson.vscode-markdownlint",
+    "EditorConfig.EditorConfig",
+    "eamodio.gitlens",
+    "ms-vscode-remote.remote-containers"
+  ],
+  "unwantedRecommendations": []
+}

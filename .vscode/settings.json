@@ -1,0 +1,67 @@
+{
+  // Go settings
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": ["--fast"],
+  "go.lintOnSave": "package",
+  "go.formatTool": "goimports",
+  "go.useLanguageServer": true,
+  "go.testOnSave": false,
+  "go.coverOnSave": false,
+  "go.testFlags": ["-v", "-race"],
+  "gopls": {
+    "ui.semanticTokens": true,
+    "formatting.gofumpt": true
+  },
+
+  // Editor settings
+  "editor.formatOnSave": true,
+  "editor.rulers": [80, 120],
+  "editor.tabSize": 4,
+  "editor.insertSpaces": false,
+  "editor.detectIndentation": false,
+
+  // File associations
+  "files.associations": {
+    "*.proto": "proto3",
+    "Makefile": "makefile",
+    "Dockerfile": "dockerfile"
+  },
+
+  // File exclusions
+  "files.exclude": {
+    "**/.git": true,
+    "**/bin": true,
+    "**/coverage.out": true
+  },
+
+  // Proto3 settings
+  "protoc": {
+    "options": ["--proto_path=${workspaceRoot}/proto"]
+  },
+
+  // Markdown lint settings (uses .markdownlint.json)
+  "markdownlint.config": {},
+
+  // Spell checker settings
+  "cSpell.words": [
+    "otel",
+    "grpc",
+    "grpcui",
+    "protobuf",
+    "opentelemetry",
+    "otlp",
+    "zerolog",
+    "godotenv",
+    "golangci"
+  ],
+
+  // Terminal settings
+  "terminal.integrated.defaultProfile.linux": "zsh",
+
+  // Search exclusions
+  "search.exclude": {
+    "**/bin": true,
+    "**/proto/**/*.pb.go": true,
+    "**/coverage.out": true
+  }
+}
