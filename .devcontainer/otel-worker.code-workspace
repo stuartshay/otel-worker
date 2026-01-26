@@ -1,0 +1,45 @@
+{
+	"folders": [
+		{
+			"name": "otel-worker",
+			"path": ".."
+		},
+		{
+			"name": "k8s-gitops",
+			"path": "../../k8s-gitops"
+		},
+		{
+			"name": "otel-demo",
+			"path": "../../otel-demo"
+		},
+		{
+			"name": "otel-ui",
+			"path": "../../otel-ui"
+		}
+	],
+	"settings": {
+		"yaml.format.enable": true,
+		"go.lintTool": "golangci-lint",
+		"go.lintFlags": [
+			"--fast"
+		],
+		"go.useLanguageServer": true,
+		"go.toolsManagement.autoUpdate": true,
+		"[go]": {
+			"editor.formatOnSave": true,
+			"editor.codeActionsOnSave": {
+				"source.organizeImports": "explicit"
+			}
+		},
+		"[proto3]": {
+			"editor.formatOnSave": true
+		},
+		"files.exclude": {
+			"**/.git": false
+		},
+		"files.watcherExclude": {
+			"**/bin/**": true,
+			"**/data/**": true
+		}
+	}
+}
