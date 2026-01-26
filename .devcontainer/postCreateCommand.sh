@@ -24,6 +24,12 @@ set -e
 
 echo "🔧 Setting up otel-worker development environment..."
 
+# Remove problematic Yarn repository with expired GPG key (not needed for this Go project)
+echo "🔧 Removing Yarn repository (expired GPG key)..."
+if [ -f "/etc/apt/sources.list.d/yarn.list" ]; then
+    sudo rm -f /etc/apt/sources.list.d/yarn.list
+fi
+
 # Install PostgreSQL client for remote database connectivity
 echo "📦 Installing PostgreSQL client..."
 sudo apt-get update

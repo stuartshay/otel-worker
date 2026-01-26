@@ -17,7 +17,10 @@
 		"ghcr.io/devcontainers-extra/features/grpcurl-asdf:2": {},
 		"ghcr.io/mrsimonemms/devcontainers/buf:1": {},
 		"ghcr.io/dhoeric/features/hadolint:1": {},
-		"ghcr.io/devcontainers-extra/features/actionlint:1": {}
+		"ghcr.io/devcontainers-extra/features/actionlint:1": {},
+   		"ghcr.io/devcontainers-extra/features/shellcheck:1": {
+      		"version": "latest"
+    	}
 	},
 	"customizations": {
 		"vscode": {
