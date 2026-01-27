@@ -13,7 +13,6 @@ linters:
     - ineffassign
     - staticcheck
     - unused
-    - gosimple
     - misspell
     - revive
     - gocritic
@@ -24,6 +23,9 @@ linters:
     - unparam
     - unconvert
     - prealloc
+    - copyloopvar
+    - durationcheck
+    - errorlint
 
   settings:
     errcheck:
@@ -57,14 +59,13 @@ linters:
       - comments
       - std-error-handling
     rules:
-      - generated: lax
-        presets:
-          - comments
-          - std-error-handling
       - path: _test\.go
         linters:
           - gosec
           - errcheck
+      - path: \.pb\.go$
+        linters:
+          - all
 
 issues:
   max-issues-per-linter: 0
