@@ -57,6 +57,10 @@ linters:
       - comments
       - std-error-handling
     rules:
+      - generated: lax
+        presets:
+          - comments
+          - std-error-handling
       - path: _test\.go
         linters:
           - gosec
