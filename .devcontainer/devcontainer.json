@@ -1,8 +1,11 @@
 {
 	"name": "otel-worker",
-	"image": "mcr.microsoft.com/devcontainers/go:1-1.24-bookworm",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		"ghcr.io/devcontainers/features/node:1": {
 			"version": "24"
 		},
@@ -12,15 +15,16 @@
 			"helm": "latest",
 			"minikube": "none"
 		},
+		"ghcr.io/gvatsal60/dev-container-features/pre-commit:1": {},
 		"ghcr.io/guiyomh/features/golangci-lint:0": {},
 		"ghcr.io/devcontainers-extra/features/protoc:1": {},
 		"ghcr.io/devcontainers-extra/features/grpcurl-asdf:2": {},
 		"ghcr.io/mrsimonemms/devcontainers/buf:1": {},
 		"ghcr.io/dhoeric/features/hadolint:1": {},
 		"ghcr.io/devcontainers-extra/features/actionlint:1": {},
-   		"ghcr.io/devcontainers-extra/features/shellcheck:1": {
-      		"version": "latest"
-    	}
+		"ghcr.io/devcontainers-extra/features/shellcheck:1": {
+			"version": "latest"
+		}
 	},
 	"customizations": {
 		"vscode": {

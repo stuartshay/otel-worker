@@ -154,7 +154,7 @@ func main() { // nolint:gocyclo // Main function complexity is acceptable for se
 	}
 
 	// Health check handlers
-	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		// Liveness probe - always returns 200 if service is running
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -170,7 +170,7 @@ func main() { // nolint:gocyclo // Main function complexity is acceptable for se
 			log.Warn().Err(err).Msg("Readiness check failed: database unhealthy")
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusServiceUnavailable)
-			_, _ = w.Write([]byte(fmt.Sprintf(`{"status":"not_ready","reason":"database_unavailable","error":"%s"}`, err.Error()))) //nolint:errcheck // HTTP response write failure is not recoverable
+			_, _ = fmt.Fprintf(w, `{"status":"not_ready","reason":"database_unavailable","error":"%s"}`, err.Error()) //nolint:errcheck // HTTP response write failure is not recoverable
 			return
 		}
 

@@ -9,12 +9,12 @@ import (
 )
 
 func TestNewQueue(t *testing.T) {
-	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
+	processor := func(_ context.Context, _ *Job) (*JobResult, error) {
 		return &JobResult{CSVPath: "/data/test.csv"}, nil
 	}
 
 	q := NewQueue(3, processor)
-	defer q.Shutdown(time.Second)
+	defer func() { _ = q.Shutdown(time.Second) }()
 
 	if q.workers != 3 {
 		t.Errorf("expected 3 workers, got %d", q.workers)
@@ -25,12 +25,12 @@ func TestNewQueue(t *testing.T) {
 }
 
 func TestEnqueue(t *testing.T) {
-	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
+	processor := func(_ context.Context, _ *Job) (*JobResult, error) {
 		return &JobResult{CSVPath: "/data/test.csv"}, nil
 	}
 
 	q := NewQueue(1, processor)
-	defer q.Shutdown(time.Second)
+	defer func() { _ = q.Shutdown(time.Second) }()
 
 	jobID, err := q.Enqueue("2026-01-24", "test-device")
 	if err != nil {
@@ -59,12 +59,12 @@ func TestEnqueue(t *testing.T) {
 }
 
 func TestGetJob_NotFound(t *testing.T) {
-	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
+	processor := func(_ context.Context, _ *Job) (*JobResult, error) {
 		return nil, nil
 	}
 
 	q := NewQueue(1, processor)
-	defer q.Shutdown(time.Second)
+	defer func() { _ = q.Shutdown(time.Second) }()
 
 	_, err := q.GetJob("non-existent-id")
 	if err == nil {
@@ -73,13 +73,13 @@ func TestGetJob_NotFound(t *testing.T) {
 }
 
 func TestListJobs(t *testing.T) {
-	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
+	processor := func(_ context.Context, _ *Job) (*JobResult, error) {
 		time.Sleep(50 * time.Millisecond)
 		return &JobResult{CSVPath: "/data/test.csv"}, nil
 	}
 
 	q := NewQueue(1, processor)
-	defer q.Shutdown(time.Second)
+	defer func() { _ = q.Shutdown(time.Second) }()
 
 	// Enqueue multiple jobs
 	_, _ = q.Enqueue("2026-01-24", "device1")
@@ -107,7 +107,7 @@ func TestListJobs(t *testing.T) {
 
 func TestProcessJob_Success(t *testing.T) {
 	var processorCalled atomic.Bool
-	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
+	processor := func(_ context.Context, _ *Job) (*JobResult, error) {
 		processorCalled.Store(true)
 		return &JobResult{
 			CSVPath:         "/data/distance_20260124.csv",
@@ -119,7 +119,7 @@ func TestProcessJob_Success(t *testing.T) {
 	}
 
 	q := NewQueue(1, processor)
-	defer q.Shutdown(time.Second)
+	defer func() { _ = q.Shutdown(time.Second) }()
 
 	jobID, _ := q.Enqueue("2026-01-24", "test-device")
 
@@ -143,12 +143,12 @@ func TestProcessJob_Success(t *testing.T) {
 }
 
 func TestProcessJob_Failure(t *testing.T) {
-	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
+	processor := func(_ context.Context, _ *Job) (*JobResult, error) {
 		return nil, errors.New("processing failed")
 	}
 
 	q := NewQueue(1, processor)
-	defer q.Shutdown(time.Second)
+	defer func() { _ = q.Shutdown(time.Second) }()
 
 	jobID, _ := q.Enqueue("2026-01-24", "test-device")
 
@@ -165,13 +165,13 @@ func TestProcessJob_Failure(t *testing.T) {
 }
 
 func TestGetStats(t *testing.T) {
-	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
+	processor := func(_ context.Context, _ *Job) (*JobResult, error) {
 		time.Sleep(50 * time.Millisecond)
 		return &JobResult{}, nil
 	}
 
 	q := NewQueue(1, processor)
-	defer q.Shutdown(time.Second)
+	defer func() { _ = q.Shutdown(time.Second) }()
 
 	// Enqueue jobs
 	_, _ = q.Enqueue("2026-01-24", "device1")
@@ -184,7 +184,7 @@ func TestGetStats(t *testing.T) {
 }
 
 func TestShutdown(t *testing.T) {
-	processor := func(ctx context.Context, job *Job) (*JobResult, error) {
+	processor := func(_ context.Context, _ *Job) (*JobResult, error) {
 		return &JobResult{}, nil
 	}
 
