@@ -9,7 +9,7 @@
 # - github-cli (ghcr.io/devcontainers/features/github-cli)
 # - kubectl & helm (ghcr.io/devcontainers/features/kubectl-helm-minikube)
 # - golangci-lint (ghcr.io/guiyomh/features/golangci-lint)
-# - pre-commit (ghcr.io/prulloac/devcontainer-features/pre-commit)
+# - pre-commit (ghcr.io/gvatsal60/dev-container-features/pre-commit:1)
 # - protoc (ghcr.io/devcontainers-extra/features/protoc)
 # - grpcurl (ghcr.io/devcontainers-extra/features/grpcurl-asdf) - gRPC CLI
 # - buf CLI (ghcr.io/devcontainers-extra/features/buf)
