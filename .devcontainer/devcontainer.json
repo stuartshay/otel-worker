@@ -1,0 +1,58 @@
+{
+	"name": "otel-worker",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "24"
+		},
+		"ghcr.io/devcontainers-extra/features/zsh-plugins": {},
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+			"kubectl": "latest",
+			"helm": "latest",
+			"minikube": "none"
+		},
+		"ghcr.io/gvatsal60/dev-container-features/pre-commit:1": {},
+		"ghcr.io/guiyomh/features/golangci-lint:0": {},
+		"ghcr.io/devcontainers-extra/features/protoc:1": {},
+		"ghcr.io/devcontainers-extra/features/grpcurl-asdf:2": {},
+		"ghcr.io/mrsimonemms/devcontainers/buf:1": {},
+		"ghcr.io/dhoeric/features/hadolint:1": {},
+		"ghcr.io/devcontainers-extra/features/actionlint:1": {},
+		"ghcr.io/devcontainers-extra/features/shellcheck:1": {
+			"version": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.Go",
+				"drblury.protobuf-vsc",
+				"redhat.vscode-yaml",
+				"streetsidesoftware.code-spell-checker",
+				"ms-vscode.makefile-tools",
+				"ms-azuretools.vscode-docker",
+				"DavidAnson.vscode-markdownlint",
+				"EditorConfig.EditorConfig",
+				"eamodio.gitlens",
+				"saoudrizwan.claude-dev",
+				"openai.chatgpt",
+				"github.copilot-chat"
+			],
+			"settings": {
+				"go.lintTool": "golangci-lint",
+				"go.lintFlags": [
+					"--fast"
+				]
+			}
+		}
+	},
+	"postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
+	"forwardPorts": [
+		50051
+	],
+	"remoteUser": "vscode"
+}

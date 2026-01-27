@@ -22,9 +22,9 @@ func TestLoad(t *testing.T) {
 	defer func() {
 		for key, val := range originalEnv {
 			if val != "" {
-				os.Setenv(key, val)
+				_ = os.Setenv(key, val)
 			} else {
-				os.Unsetenv(key)
+				_ = os.Unsetenv(key)
 			}
 		}
 	}()
@@ -32,7 +32,7 @@ func TestLoad(t *testing.T) {
 	t.Run("loads default values", func(t *testing.T) {
 		// Clear env vars
 		for _, key := range envVars {
-			os.Unsetenv(key)
+			_ = os.Unsetenv(key)
 		}
 
 		cfg, err := Load()
@@ -58,11 +58,11 @@ func TestLoad(t *testing.T) {
 	})
 
 	t.Run("loads custom values from environment", func(t *testing.T) {
-		os.Setenv("SERVICE_NAME", "test-service")
-		os.Setenv("GRPC_PORT", "9999")
-		os.Setenv("POSTGRES_PORT", "5432")
-		os.Setenv("HOME_LATITUDE", "42.0")
-		os.Setenv("HOME_LONGITUDE", "-73.0")
+		_ = os.Setenv("SERVICE_NAME", "test-service")
+		_ = os.Setenv("GRPC_PORT", "9999")
+		_ = os.Setenv("POSTGRES_PORT", "5432")
+		_ = os.Setenv("HOME_LATITUDE", "42.0")
+		_ = os.Setenv("HOME_LONGITUDE", "-73.0")
 
 		cfg, err := Load()
 		if err != nil {
@@ -87,7 +87,7 @@ func TestLoad(t *testing.T) {
 	})
 
 	t.Run("returns error for invalid float", func(t *testing.T) {
-		os.Setenv("HOME_LATITUDE", "invalid")
+		_ = os.Setenv("HOME_LATITUDE", "invalid")
 
 		_, err := Load()
 		if err == nil {

@@ -9,7 +9,7 @@ import (
 
 func TestHealthzEndpoint(t *testing.T) {
 	// Test liveness probe handler
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status":"healthy","service":"otel-worker"}`)) //nolint:errcheck

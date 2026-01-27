@@ -42,7 +42,7 @@ func NewServer(cfg *config.Config, db *database.Client) *Server {
 }
 
 // CalculateDistanceFromHome initiates an async distance calculation job
-func (s *Server) CalculateDistanceFromHome(ctx context.Context, req *distancev1.CalculateDistanceRequest) (*distancev1.CalculateDistanceResponse, error) {
+func (s *Server) CalculateDistanceFromHome(_ context.Context, req *distancev1.CalculateDistanceRequest) (*distancev1.CalculateDistanceResponse, error) {
 	log.Info().
 		Str("date", req.Date).
 		Str("device_id", req.DeviceId).
@@ -68,7 +68,7 @@ func (s *Server) CalculateDistanceFromHome(ctx context.Context, req *distancev1.
 }
 
 // GetJobStatus returns the current status of a distance calculation job
-func (s *Server) GetJobStatus(ctx context.Context, req *distancev1.GetJobStatusRequest) (*distancev1.GetJobStatusResponse, error) {
+func (s *Server) GetJobStatus(_ context.Context, req *distancev1.GetJobStatusRequest) (*distancev1.GetJobStatusResponse, error) {
 	job, err := s.queue.GetJob(req.JobId)
 	if err != nil {
 		return nil, fmt.Errorf("job not found: %w", err)
@@ -115,7 +115,7 @@ func (s *Server) GetJobStatus(ctx context.Context, req *distancev1.GetJobStatusR
 }
 
 // ListJobs returns a list of distance calculation jobs with optional filtering
-func (s *Server) ListJobs(ctx context.Context, req *distancev1.ListJobsRequest) (*distancev1.ListJobsResponse, error) {
+func (s *Server) ListJobs(_ context.Context, req *distancev1.ListJobsRequest) (*distancev1.ListJobsResponse, error) {
 	limit := int(req.Limit)
 	if limit == 0 {
 		limit = 50

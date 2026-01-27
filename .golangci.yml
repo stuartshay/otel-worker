@@ -9,13 +9,10 @@ run:
 linters:
   enable:
     - errcheck
-    - gosimple
     - govet
     - ineffassign
     - staticcheck
     - unused
-    - gofmt
-    - goimports
     - misspell
     - revive
     - gocritic
@@ -26,6 +23,9 @@ linters:
     - unparam
     - unconvert
     - prealloc
+    - copyloopvar
+    - durationcheck
+    - errorlint
 
   settings:
     errcheck:
@@ -63,6 +63,9 @@ linters:
         linters:
           - gosec
           - errcheck
+      - path: \.pb\.go$
+        linters:
+          - all
 
 issues:
   max-issues-per-linter: 0

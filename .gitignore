@@ -1,12 +1,172 @@
+# =============================================================================
+# Go Development .gitignore
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Go Build Artifacts
+# -----------------------------------------------------------------------------
+# Compiled binaries
 bin/
 *.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
 *.test
+
+# Go build cache (rarely needed, but can appear)
+.go/
+
+# -----------------------------------------------------------------------------
+# Go Module & Vendor
+# -----------------------------------------------------------------------------
+# Dependency directories (if not vendoring)
+# vendor/
+
+# Go workspace file (go 1.18+)
+# Uncomment if you don't want to track workspace files
+# go.work
+# go.work.sum
+
+# -----------------------------------------------------------------------------
+# Test & Coverage
+# -----------------------------------------------------------------------------
+# Coverage output files
 *.out
-.env
-.env.local
+coverage.out
+coverage.html
+coverage.txt
+coverage/
+
+# CPU and memory profiles
+*.prof
+*.pprof
+cpu.out
+mem.out
+
+# Benchmark results
+*.bench
+
+# -----------------------------------------------------------------------------
+# IDE & Editors
+# -----------------------------------------------------------------------------
+# JetBrains IDEs (GoLand, IntelliJ)
 .idea/
-.vscode/
+*.iml
+*.ipr
+*.iws
+
+# VS Code (optional - some teams track .vscode/settings.json)
+# .vscode/
+.vscode/*.log
+.vscode/launch.json.local
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# -----------------------------------------------------------------------------
+# Operating System
+# -----------------------------------------------------------------------------
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# -----------------------------------------------------------------------------
+# Environment & Secrets
+# -----------------------------------------------------------------------------
+# Environment files (NEVER commit secrets)
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Secret files
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+.secrets/
+
+# -----------------------------------------------------------------------------
+# Project Specific
+# -----------------------------------------------------------------------------
+# Data directory (local data, CSVs, etc.)
 /data/
 *.csv
+
+# Log files
 *.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Debug output
+debug/
+*.debug
+
+# Air live reload (if using air for hot reload)
+tmp/
+
+# Delve debugger
+__debug_bin
+__debug_bin*
+
+# -----------------------------------------------------------------------------
+# Docker & Containers
+# -----------------------------------------------------------------------------
+# Docker build context exclusions are in .dockerignore
+
+# -----------------------------------------------------------------------------
+# Miscellaneous
+# -----------------------------------------------------------------------------
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Node modules (if using any JS tooling)
+node_modules/
+
+# Python (if using any Python tooling like pre-commit)
+__pycache__/
+*.pyc
+.venv/
+venv/
