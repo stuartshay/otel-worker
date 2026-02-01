@@ -27,9 +27,9 @@ The `main` branch has the following protections:
 
 ✅ **Require conversation resolution before merging**
 
-✅ **Prevent force pushes** - Disabled
+✅ **Prevent force pushes** - Enabled
 
-✅ **Prevent branch deletion** - Disabled
+✅ **Prevent branch deletion** - Enabled
 
 ## Development Workflow
 
@@ -163,6 +163,6 @@ If absolutely necessary (production incident):
 
 ## Related Documentation
 
-- [](docs/DATABASE.md) - Database schema
-- [](docs/DEPLOYMENT_GUIDE.md) - Kubernetes deployment
-- [](../k8s-gitops/AGENTS.md) - GitOps workflow
+- [Database Schema](DATABASE.md) - Database schema
+- [Deployment Guide](DEPLOYMENT_GUIDE.md) - Kubernetes deployment
+- [GitOps Agents](https://github.com/stuartshay/k8s-gitops/blob/main/AGENTS.md) - GitOps workflow
