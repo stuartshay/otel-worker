@@ -1,16 +1,16 @@
 {
 	"folders": [
 		{
-			"name": "otel-worker",
-			"path": ".."
-		},
-		{
 			"name": "k8s-gitops",
 			"path": "../../k8s-gitops"
 		},
 		{
 			"name": "otel-demo",
 			"path": "../../otel-demo"
+		},
+		{
+			"name": "otel-worker",
+			"path": ".."
 		},
 		{
 			"name": "otel-ui",
