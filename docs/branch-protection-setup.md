@@ -13,11 +13,13 @@ This document describes the GitHub branch protection rules configured for the ot
 The `main` branch has the following protections:
 
 ✅ **Require a pull request before merging**
+
 - Required approvals: `0` (solo developer)
 - Dismiss stale reviews when new commits pushed
 - No direct commits to main allowed
 
 ✅ **Require status checks to pass before merging**
+
 - Required checks:
   - `Build and Push / build` (docker.yml workflow)
   - `Lint / lint` (lint workflow with golangci-lint)
@@ -68,7 +70,7 @@ gh pr create --base main --head develop \
 
 **Via GitHub Web UI**:
 
-1. https://github.com/stuartshay/otel-worker
+1. <https://github.com/stuartshay/otel-worker>
 2. Pull requests → New pull request
 3. Base: `main` ← Compare: `develop`
 
