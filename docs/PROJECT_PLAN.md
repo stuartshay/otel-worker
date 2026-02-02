@@ -330,3 +330,91 @@ See [QUICK_WINS.md](QUICK_WINS.md) for detailed task breakdown.
 - [ ] Write DATABASE.md with schema and queries
 - [ ] Write DEPLOYMENT.md with kubectl commands
 - [ ] Write DEVELOPMENT.md with local setup
+### Phase 7: Database Migrations & Multi-Source GPS 🗄️ PLANNED
+
+#### Migration Repository Reference
+
+**Repository**: [home lab-database-migrations](https://github.com/stuartshay/homelab-database-migrations)
+
+This application now relies on a centralized migration system for database schema management. See the homelab-database-migrations repository for:
+- Database setup instructions (dev/prod)
+- Schema migration files
+- Garmin Connect integration schema
+- Data seeding scripts
+
+#### Database Environment Updates
+
+- [ ] **Update development environment**
+  - Change `.env` to use `owntracks_dev` database
+  - Test connectivity to 192.168.1.175:5432/owntracks_dev
+  - Verify application works with dev schema
+
+- [ ] **Document database dependencies**
+  - Link to homelab-database-migrations README
+  - Add database setup section to README.md
+  - Document required schema version
+
+#### Garmin Connect Integration (Future)
+
+The database now supports dual-source GPS tracking:
+
+1. **OwnTracks** (existing) - Real-time location tracking
+   - `public.locations` table
+   - Device-based tracking
+   - Battery, accuracy, velocity metrics
+
+2. **Garmin Connect** (new) - Activity-based GPS tracks
+   - `public.garmin_activities` - Workout metadata
+   - `public.garmin_track_points` - GPS coordinates from activities
+   - Rich metrics: heart rate, cadence, speed, elevation
+
+**Application Updates Required** (future work):
+
+- [ ] Add gRPC methods for Garmin activity queries
+  - `GetActivitiesByDateRange`
+  - `GetActivityDetails`
+  - `GetActivitiesWithinRadius`
+
+- [ ] Update distance calculations to handle Garmin data
+  - Query `garmin_track_points` table
+  - Calculate distance metrics per activity
+  - Generate CSV with activity metadata
+
+- [ ] Add unified GPS endpoints
+  - Query `unified_gps_points` view
+  - Combine OwnTracks + Garmin data
+  - Filter by date, device, sport type
+
+#### Migration Workflow
+
+1. **Developers**: Apply migrations locally to `owntracks_dev`
+   ```bash
+   git clone https://github.com/stuartshay/homelab-database-migrations.git
+   cd homelab-database-migrations
+   ./scripts/migrate.sh dev up
+   ```
+
+2. **CI/CD**: Production migrations applied automatically
+   ```bash
+   # Triggered by git tag in homelab-database-migrations
+   ./scripts/migrate.sh prod up
+   ```
+
+3. **otel-worker deployment**: Always follows successful migration
+
+#### Data Seeding for Development
+
+The migrations repo includes rich test data:
+- **Garmin activity**: 50.6km cycling with 10,707 GPS points
+- **OwnTracks data**: Synthetic tracks for realistic testing
+- **Seed script**: `./scripts/seed_dev_data.sh`
+
+This enables local testing with realistic GPS movement patterns instead of static data.
+
+#### Related Documentation
+
+- **[homelab-database-migrations README](https://github.com/stuartshay/homelab-database-migrations/blob/main/README.md)**
+- **[Migration Guide](https://github.com/stuartshay/homelab-database-migrations/blob/main/docs/MIGRATION_GUIDE.md)**
+- **[Schema Reference](https://github.com/stuartshay/homelab-database-migrations/blob/main/docs/schema_reference.sql)**
+
+**Estimated Time**: 2-3 hours for dev environment updates, 6-8 hours for Garmin integration
