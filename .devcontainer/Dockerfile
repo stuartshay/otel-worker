@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/go:1-1.24-bookworm
+FROM mcr.microsoft.com/devcontainers/go:2-1.24-bookworm
 
 # Remove Yarn repository with expired GPG key before features install
 # This prevents apt-get update failures during feature installation
